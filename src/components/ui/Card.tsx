@@ -5,19 +5,26 @@ interface CardProps {
     title: string;
     description: string;
     href: string;
+    icon?: React.ReactNode;
 }
 
 const Card: React.FC<CardProps> = ({
     title,
     description,
-    href
+    href,
+    icon
 }) => {
     return (
         <Link
             to={href}
-            className="block max-w-sm p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group"
+            className="block p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group h-full"
         >
-            <h3 className="mb-2 text-2xl font-semibold tracking-tight text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+            {icon && (
+                <div className="mb-4 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
+                    {icon}
+                </div>
+            )}
+            <h3 className="mb-2 text-xl font-semibold tracking-tight text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                 {title}
             </h3>
             <p className="font-normal text-gray-700 dark:text-gray-400">
