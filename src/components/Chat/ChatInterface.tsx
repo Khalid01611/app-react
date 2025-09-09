@@ -205,43 +205,43 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   };
 
   return (
-    <div className="flex flex-col h-full bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
+    <div className="flex flex-col h-full bg-white dark:bg-gray-900">
       {/* Header */}
-      <div className="flex items-center justify-between p-6 backdrop-blur-sm bg-slate-800/80 border-b border-slate-700/50 shadow-lg">
+      <div className="flex items-center justify-between p-6 backdrop-blur-sm bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-lg">
         <div className="flex items-center space-x-4">
           {onToggleSidebar && (
             <button
               onClick={onToggleSidebar}
-              className="mr-2 p-3 text-slate-400 hover:text-slate-200 hover:bg-slate-700/60 rounded-xl transition-all duration-200 group backdrop-blur-sm border border-slate-700/50 lg:hidden"
+              className="mr-2 p-3 text-gray-400 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-all duration-200 group backdrop-blur-sm border border-gray-200 dark:border-gray-700 lg:hidden"
               title="Show conversations"
             >
               <Menu className="w-5 h-5 group-hover:scale-110 transition-transform" />
             </button>
           )}
           <div className="relative">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-xl font-bold text-white shadow-lg ring-2 ring-slate-700/50">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-xl font-bold text-white shadow-lg ring-2 ring-gray-200 dark:ring-gray-700">
               {conversation.type === "group" ? <Users size={20} /> : <User size={20} />}
             </div>
 
             {/* Online indicator */}
             {conversation.type === "direct" && getOnlineParticipants() > 0 && (
-              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-gradient-to-r from-emerald-400 to-emerald-500 border-3 border-slate-800 rounded-full shadow-md animate-pulse"></div>
+              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-gradient-to-r from-emerald-400 to-emerald-500 border-3 border-white dark:border-gray-800 rounded-full shadow-md animate-pulse"></div>
             )}
 
             {/* Group online count */}
             {conversation.type === "group" && getOnlineParticipants() > 0 && (
-              <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-gradient-to-r from-emerald-400 to-emerald-500 border-2 border-slate-800 rounded-full flex items-center justify-center shadow-md">
-                <span className="text-xs text-slate-900 font-bold">{getOnlineParticipants()}</span>
+              <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-gradient-to-r from-emerald-400 to-emerald-500 border-2 border-white dark:border-gray-800 rounded-full flex items-center justify-center shadow-md">
+                <span className="text-xs text-white font-bold">{getOnlineParticipants()}</span>
               </div>
             )}
           </div>
 
           <div>
-            <h2 className="font-bold text-xl text-white">{getConversationName()}</h2>
-            <p className="text-sm text-slate-400 flex items-center">
+            <h2 className="font-bold text-xl text-gray-900 dark:text-white">{getConversationName()}</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center">
               {conversation.type === "group" ? (
                 <>
-                  <span className="w-2 h-2 bg-slate-500 rounded-full mr-2"></span>
+                  <span className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full mr-2"></span>
                   {conversation.participants.length} members • {getOnlineParticipants()} online
                 </>
               ) : (
@@ -249,7 +249,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                   <span className={`w-2 h-2 rounded-full mr-2 ${
                     conversation.participants.find((p) => p._id !== currentUserId)?.presence?.isOnline 
                       ? 'bg-emerald-500 animate-pulse' 
-                      : 'bg-slate-500'
+                      : 'bg-gray-400 dark:bg-gray-500'
                   }`}></span>
                   {conversation.participants.find((p) => p._id !== currentUserId)?.presence?.isOnline ? "Online" : "Offline"}
                 </>
@@ -260,14 +260,14 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
 
         <div className="flex items-center space-x-2">
           <button
-            className="p-3 text-slate-400 hover:text-emerald-400 hover:bg-slate-700/60 rounded-xl transition-all duration-200 group backdrop-blur-sm border border-slate-700/50 hover:border-emerald-500/30"
+            className="p-3 text-gray-400 dark:text-gray-400 hover:text-emerald-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-all duration-200 group backdrop-blur-sm border border-gray-200 dark:border-gray-700 hover:border-emerald-500/30"
             title="Start audio call"
             onClick={() => setCallState({ open: true, type: "audio", isCaller: true })}
           >
             <Phone className="w-5 h-5 group-hover:scale-110 transition-transform" />
           </button>
           <button
-            className="p-3 text-slate-400 hover:text-blue-400 hover:bg-slate-700/60 rounded-xl transition-all duration-200 group backdrop-blur-sm border border-slate-700/50 hover:border-blue-500/30"
+            className="p-3 text-gray-400 dark:text-gray-400 hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-all duration-200 group backdrop-blur-sm border border-gray-200 dark:border-gray-700 hover:border-blue-500/30"
             title="Start video call"
             onClick={() => setCallState({ open: true, type: "video", isCaller: true })}
           >
@@ -275,7 +275,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           </button>
           <button 
             onClick={() => setInfoOpen(true)} 
-            className="p-3 text-slate-400 hover:text-purple-400 hover:bg-slate-700/60 rounded-xl transition-all duration-200 group backdrop-blur-sm border border-slate-700/50 hover:border-purple-500/30" 
+            className="p-3 text-gray-400 dark:text-gray-400 hover:text-purple-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-all duration-200 group backdrop-blur-sm border border-gray-200 dark:border-gray-700 hover:border-purple-500/30" 
             title="Conversation info"
           >
             <Info className="w-5 h-5 group-hover:scale-110 transition-transform" />
@@ -287,22 +287,22 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       <div
         ref={messagesContainerRef}
         onScroll={handleScroll}
-        className="flex-1 overflow-y-auto p-6 space-y-4 bg-gradient-to-b from-slate-900/50 to-slate-900"
+        className="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50 dark:bg-gray-900"
       >
         {isLoadingOlder && (
           <div className="pt-2 pb-4">
-            <Spinner text="Loading messages..." size={2} colorClass="border-slate-400" />
+            <Spinner text="Loading messages..." size={2} colorClass="border-gray-400 dark:border-gray-500" />
           </div>
         )}
         {messages.length === 0 ? (
           <div className="flex items-center justify-center h-full">
             <div className="text-center">
-              <div className="w-20 h-20 mx-auto mb-6 text-slate-600 relative">
+              <div className="w-20 h-20 mx-auto mb-6 text-gray-400 dark:text-gray-600 relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/20 to-purple-600/20 rounded-full animate-pulse"></div>
                 <MessageCircle className="relative z-10 w-full h-full" strokeWidth={1.5} />
               </div>
-              <h3 className="text-xl font-bold text-slate-200 mb-3">No messages yet</h3>
-              <p className="text-slate-500">Start the conversation by sending a message</p>
+              <h3 className="text-xl font-bold text-gray-700 dark:text-gray-200 mb-3">No messages yet</h3>
+              <p className="text-gray-500 dark:text-gray-400">Start the conversation by sending a message</p>
             </div>
           </div>
         ) : (
@@ -327,7 +327,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
 
         {/* Typing indicator */}
         {getTypingText() && (
-          <div className="flex items-center space-x-3 text-sm text-slate-400 italic p-4 bg-slate-800/30 rounded-2xl backdrop-blur-sm border border-slate-700/30">
+          <div className="flex items-center space-x-3 text-sm text-gray-500 dark:text-gray-400 italic p-4 bg-white dark:bg-gray-800 rounded-2xl backdrop-blur-sm border border-gray-200 dark:border-gray-700">
             <div className="flex space-x-1">
               <div className="w-2 h-2 bg-gradient-to-r from-indigo-400 to-purple-500 rounded-full animate-bounce"></div>
               <div className="w-2 h-2 bg-gradient-to-r from-indigo-400 to-purple-500 rounded-full animate-bounce" style={{ animationDelay: "0.1s" }}></div>
@@ -341,15 +341,15 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       </div>
 
       {/* Input */}
-      <div className="border-t border-slate-700/50 p-6 bg-slate-800/40 backdrop-blur-sm">
+      <div className="border-t border-gray-200 dark:border-gray-700 p-6 bg-white dark:bg-gray-800 backdrop-blur-sm">
         {replyToMessage && (
-          <div className="mb-3 flex items-center justify-between rounded-xl bg-slate-800/60 border border-slate-700/50 p-3">
-            <div className="text-sm text-slate-300 truncate">
+          <div className="mb-3 flex items-center justify-between rounded-xl bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 p-3">
+            <div className="text-sm text-gray-700 dark:text-gray-300 truncate">
               Replying to <span className="font-semibold">{replyToMessage.sender?.name || "user"}</span>: {replyToMessage.content?.slice(0, 60) || replyToMessage.fileName || "media"}
             </div>
             <button
               onClick={() => setReplyToMessage(null)}
-              className="ml-3 text-xs px-2 py-1 rounded-lg bg-slate-700 text-slate-200 hover:bg-slate-600"
+              className="ml-3 text-xs px-2 py-1 rounded-lg bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-500"
               title="Cancel reply"
             >
               Cancel
@@ -361,9 +361,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                 const container = messagesContainerRef.current;
                 if (el && container) {
                   container.scrollTo({ top: el.offsetTop - 80, behavior: "smooth" });
-                  el.classList.add("ring-2", "ring-emerald-500", "ring-offset-2", "ring-offset-slate-800");
+                  el.classList.add("ring-2", "ring-emerald-500", "ring-offset-2", "ring-offset-white", "dark:ring-offset-gray-800");
                   setTimeout(() => {
-                    el.classList.remove("ring-2", "ring-emerald-500", "ring-offset-2", "ring-offset-slate-800");
+                    el.classList.remove("ring-2", "ring-emerald-500", "ring-offset-2", "ring-offset-white", "dark:ring-offset-gray-800");
                   }, 1500);
                 }
               }}

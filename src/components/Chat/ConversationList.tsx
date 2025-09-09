@@ -116,17 +116,17 @@ const ConversationList: React.FC<ConversationListProps> = ({
 
   if (loading) {
     return (
-      <div className="flex-1 p-6 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      <div className="flex-1 p-6 bg-gray-50 dark:bg-gray-900">
         <div className="space-y-4">
           {[...Array(5)].map((_, index) => (
-            <div key={index} className="flex items-center space-x-4 p-4 rounded-2xl bg-slate-800/50 backdrop-blur-sm animate-pulse">
+            <div key={index} className="flex items-center space-x-4 p-4 rounded-2xl bg-white dark:bg-gray-800 backdrop-blur-sm animate-pulse">
               <div className="relative">
-                <div className="w-14 h-14 bg-gradient-to-br from-slate-700 to-slate-600 rounded-2xl shadow-lg"></div>
-                <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-slate-600 rounded-full border-2 border-slate-800"></div>
+                <div className="w-14 h-14 bg-gray-200 dark:bg-gray-700 rounded-2xl shadow-lg"></div>
+                <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-gray-300 dark:bg-gray-600 rounded-full border-2 border-white dark:border-gray-800"></div>
               </div>
               <div className="flex-1">
-                <div className="h-4 bg-gradient-to-r from-slate-700 to-slate-600 rounded-lg w-3/4 mb-3"></div>
-                <div className="h-3 bg-gradient-to-r from-slate-700 to-slate-600 rounded-lg w-1/2"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded-lg w-3/4 mb-3"></div>
+                <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded-lg w-1/2"></div>
               </div>
             </div>
           ))}
@@ -137,9 +137,9 @@ const ConversationList: React.FC<ConversationListProps> = ({
 
   if (conversations.length === 0) {
     return (
-      <div className="flex-1 flex items-center justify-center p-6 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      <div className="flex-1 flex items-center justify-center p-6 bg-gray-50 dark:bg-gray-900">
         <div className="text-center max-w-sm mx-auto">
-          <div className="w-20 h-20 mx-auto mb-6 text-slate-500 bg-slate-800/50 rounded-2xl flex items-center justify-center backdrop-blur-sm shadow-2xl">
+          <div className="w-20 h-20 mx-auto mb-6 text-gray-400 dark:text-gray-500 bg-white dark:bg-gray-800 rounded-2xl flex items-center justify-center backdrop-blur-sm shadow-2xl">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-10 h-10">
               <path
                 strokeLinecap="round"
@@ -149,15 +149,15 @@ const ConversationList: React.FC<ConversationListProps> = ({
               />
             </svg>
           </div>
-          <h3 className="text-slate-300 text-lg font-semibold mb-2">No conversations yet</h3>
-          <p className="text-slate-500 text-sm leading-relaxed">Start a new conversation to begin your messaging journey</p>
+          <h3 className="text-gray-700 dark:text-gray-300 text-lg font-semibold mb-2">No conversations yet</h3>
+          <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">Start a new conversation to begin your messaging journey</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex-1 overflow-y-auto bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <div className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900">
       <div className="space-y-2 p-4">
         {conversations.filter(matchesQuery).map((conversation) => {
           const isActive = isConversationActive(conversation);
@@ -171,7 +171,7 @@ const ConversationList: React.FC<ConversationListProps> = ({
               className={`group flex items-center space-x-4 p-4 rounded-2xl cursor-pointer transition-all duration-300 transform hover:scale-[1.02] ${
                 isActive 
                   ? "bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-blue-500/30 shadow-xl shadow-blue-500/10 backdrop-blur-sm" 
-                  : "hover:bg-slate-800/60 backdrop-blur-sm hover:shadow-lg hover:shadow-slate-900/20"
+                  : "hover:bg-white dark:hover:bg-gray-800 backdrop-blur-sm hover:shadow-lg"
               }`}
             >
               {/* Avatar */}
@@ -179,19 +179,19 @@ const ConversationList: React.FC<ConversationListProps> = ({
                 <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-bold shadow-lg transition-all duration-300 ${
                   isActive
                     ? "bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-blue-500/30"
-                    : "bg-gradient-to-br from-slate-700 to-slate-600 text-slate-300 group-hover:from-slate-600 group-hover:to-slate-500"
+                    : "bg-gradient-to-br from-gray-300 to-gray-400 dark:from-gray-700 dark:to-gray-600 text-gray-700 dark:text-gray-300 group-hover:from-gray-400 group-hover:to-gray-500 dark:group-hover:from-gray-600 dark:group-hover:to-gray-500"
                 }`}>
                   {getConversationAvatar(conversation)}
                 </div>
 
                 {/* Online indicator */}
                 {conversation.type === "direct" && isOtherDirectUserOnline(conversation) && (
-                  <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-gradient-to-r from-green-400 to-emerald-500 border-3 border-slate-800 rounded-full shadow-lg animate-pulse"></div>
+                  <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-gradient-to-r from-green-400 to-emerald-500 border-3 border-white dark:border-gray-800 rounded-full shadow-lg animate-pulse"></div>
                 )}
 
                 {/* Group online count */}
                 {conversation.type === "group" && onlineCount > 0 && (
-                  <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-gradient-to-r from-green-400 to-emerald-500 border-3 border-slate-800 rounded-full flex items-center justify-center shadow-lg">
+                  <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-gradient-to-r from-green-400 to-emerald-500 border-3 border-white dark:border-gray-800 rounded-full flex items-center justify-center shadow-lg">
                     <span className="text-xs text-white font-bold">{onlineCount}</span>
                   </div>
                 )}
@@ -202,7 +202,7 @@ const ConversationList: React.FC<ConversationListProps> = ({
                 <div className="flex items-center justify-between mb-1">
                   <div className="flex items-center space-x-2">
                     <h3 className={`font-bold truncate transition-colors duration-300 ${
-                      isActive ? "text-white" : "text-slate-200 group-hover:text-white"
+                      isActive ? "text-white" : "text-gray-900 dark:text-gray-200 group-hover:text-gray-700 dark:group-hover:text-white"
                     }`}>
                       {getConversationName(conversation)}
                     </h3>
@@ -212,7 +212,7 @@ const ConversationList: React.FC<ConversationListProps> = ({
                   </div>
                   {conversation.lastMessageTime && (
                     <span className={`text-xs font-medium transition-colors duration-300 ${
-                      isActive ? "text-blue-200" : "text-slate-500 group-hover:text-slate-400"
+                      isActive ? "text-blue-200" : "text-gray-500 dark:text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300"
                     }`}>
                       {formatTime(conversation.lastMessageTime)}
                     </span>
@@ -221,7 +221,7 @@ const ConversationList: React.FC<ConversationListProps> = ({
 
                 <div className="flex items-center justify-between">
                   <p className={`text-sm truncate flex-1 transition-colors duration-300 ${
-                    isActive ? "text-slate-300" : "text-slate-400 group-hover:text-slate-300"
+                    isActive ? "text-gray-300" : "text-gray-600 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300"
                   }`}>
                     {formatLastMessage(conversation.lastMessage)}
                   </p>
@@ -236,7 +236,7 @@ const ConversationList: React.FC<ConversationListProps> = ({
                   {onConversationDelete && (
                     <button
                       onClick={(e) => { e.stopPropagation(); onConversationDelete(conversation._id); }}
-                      className="ml-2 text-slate-400 hover:text-red-500 transition-colors"
+                      className="ml-2 text-gray-400 dark:text-gray-500 hover:text-red-500 transition-colors"
                       title="Delete conversation"
                     >
                       🗑️
