@@ -32,6 +32,7 @@ import GlobalMessageNotifier from "./components/Chat/GlobalMessageNotifier";
 import ReportManagement from "./pages/Admin/Report/ReportManagement";
 import Settings from "./pages/Admin/Settings/Settings";
 import SMSSetting from "./pages/Admin/Settings/SMSSetting";
+import InvoiceSettings from "./pages/Admin/Settings/InvoiceSettings";
 
 const App = () => {
   return (
@@ -98,6 +99,7 @@ const AppRoutes = () => {
 
         <Route path="settings" element={<Settings />} />
         <Route path="sms-settings" element={<SMSSetting />} />
+        <Route path="invoice-settings" element={<InvoiceSettings />} />
 
         <Route path="account-settings" element={<ProfileInformation />} />
         <Route path="email-settings" element={<AccountEmailSettings />} />
