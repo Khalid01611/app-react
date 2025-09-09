@@ -63,6 +63,7 @@ const InvoiceManagement = () => {
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
+  const [invoiceSettings, setInvoiceSettings] = useState({ invoiceNumber: "" });
   const [filters, setFilters] = useState({
     payment_method: "",
     startDate: "",
@@ -94,6 +95,15 @@ const InvoiceManagement = () => {
         toastError("Failed to fetch products");
       }
       setProducts([]);
+    }
+  };
+
+  const fetchInvoiceSettings = async () => {
+    try {
+      const res = await request.get("/api/admin/invoice-settings");
+      setInvoiceSettings({ invoiceNumber: res.data.invoiceNumber || "" });
+    } catch (error: any) {
+      console.error("Failed to fetch invoice settings:", error);
     }
   };
 
@@ -141,6 +151,7 @@ const InvoiceManagement = () => {
   useEffect(() => {
     fetchData();
     fetchProducts();
+    fetchInvoiceSettings();
   }, [page, perPage, sort, searchInput, filters]);
 
   // Refetch data when modals are closed
@@ -293,6 +304,9 @@ const InvoiceManagement = () => {
   };
 
   const generateInvoiceNumber = () => {
+    if (invoiceSettings.invoiceNumber) {
+      return invoiceSettings.invoiceNumber;
+    }
     const timestamp = Date.now();
     const random = Math.floor(Math.random() * 1000);
     return `INV-${timestamp}-${random}`;
