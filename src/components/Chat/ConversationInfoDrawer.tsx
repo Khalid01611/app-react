@@ -142,14 +142,14 @@ const ConversationInfoDrawer: React.FC<Props> = ({ open, onClose, conversation, 
   return (
     <div className="fixed inset-0 z-50">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      <div className="absolute top-0 right-0 h-full w-full sm:w-96 bg-gradient-to-b from-slate-900 to-slate-800 shadow-2xl overflow-y-auto border-l border-slate-700/50">
+      <div className="absolute top-0 right-0 h-full w-full sm:w-96 bg-white dark:bg-gray-900 shadow-2xl overflow-y-auto border-l border-gray-200 dark:border-gray-700">
         {/* Header */}
-        <div className="sticky top-0 z-10 backdrop-blur-lg bg-slate-900/80 p-6 border-b border-slate-700/50">
+        <div className="sticky top-0 z-10 backdrop-blur-lg bg-white/80 dark:bg-gray-900/80 p-6 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-white">Conversation info</h2>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Conversation info</h2>
             <button 
               onClick={onClose} 
-              className="p-2 text-slate-400 hover:text-white hover:bg-slate-700/60 rounded-lg transition-all duration-200"
+              className="p-2 text-gray-400 dark:text-gray-400 hover:text-gray-600 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200"
             >
               <X size={20} />
             </button>
@@ -159,26 +159,26 @@ const ConversationInfoDrawer: React.FC<Props> = ({ open, onClose, conversation, 
         <div className="p-6 space-y-6">
           {/* Profile Section */}
           {isGroup ? (
-            <div className="flex items-center space-x-4 p-4 bg-slate-800/50 rounded-2xl border border-slate-700/30">
+            <div className="flex items-center space-x-4 p-4 bg-gray-100 dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700">
               <div className="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg">
                 <Users size={24} className="text-white" />
               </div>
               <div>
-                <div className="font-bold text-xl text-white">{conversation.name || "Group"}</div>
-                <div className="text-slate-400 flex items-center space-x-2">
+                <div className="font-bold text-xl text-gray-900 dark:text-white">{conversation.name || "Group"}</div>
+                <div className="text-gray-500 dark:text-gray-400 flex items-center space-x-2">
                   <Users size={14} />
                   <span>{members.length} members</span>
                 </div>
               </div>
             </div>
           ) : (
-            <div className="flex items-center space-x-4 p-4 bg-slate-800/50 rounded-2xl border border-slate-700/30">
+            <div className="flex items-center space-x-4 p-4 bg-gray-100 dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700">
               <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center shadow-lg">
                 <User size={24} className="text-white" />
               </div>
               <div>
-                <div className="font-bold text-xl text-white">{other?.name}</div>
-                <div className="text-slate-400">{other?.email}</div>
+                <div className="font-bold text-xl text-gray-900 dark:text-white">{other?.name}</div>
+                <div className="text-gray-500 dark:text-gray-400">{other?.email}</div>
                 <div className="flex items-center space-x-2 mt-1">
                   <div className={`w-2 h-2 rounded-full ${other?.presence?.isOnline ? 'bg-emerald-500 animate-pulse' : 'bg-slate-500'}`}></div>
                   <span className="text-sm text-slate-400">
