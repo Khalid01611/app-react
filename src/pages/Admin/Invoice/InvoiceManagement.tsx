@@ -527,7 +527,7 @@ const InvoiceManagement = () => {
           e.preventDefault();
           const formData = new FormData(e.currentTarget);
           const values = Object.fromEntries(formData.entries());
-          
+
           // Ensure all required fields are present
           const completeValues = {
             ...values,
@@ -538,7 +538,7 @@ const InvoiceManagement = () => {
             total_amount: formValues.total_amount || values.total_amount,
             is_sent_sms: values.is_sent_sms === 'on'
           };
-          
+
           handleCreateOrEditSubmit(completeValues);
         }} className="space-y-6">
           {/* Invoice Number */}
@@ -587,6 +587,22 @@ const InvoiceManagement = () => {
               name="vehicle_no"
               defaultValue={selectedInvoice?.vehicle_no || ""}
               placeholder="Enter vehicle number (optional)"
+              onBlur={async (e) => {
+                const vehicleNo = e.target.value.trim();
+                if (vehicleNo && !selectedInvoice) {
+                  try {
+                    const res = await request.get(`/api/admin/get/customer-by-vehicle/${encodeURIComponent(vehicleNo)}`);
+                    if (res.data.status && res.data.customer) {
+                      const customerNameInput = document.getElementById('customer_name') as HTMLInputElement;
+                      const customerPhoneInput = document.getElementById('customer_phone_number') as HTMLInputElement;
+                      if (customerNameInput) customerNameInput.value = res.data.customer.customer_name;
+                      if (customerPhoneInput) customerPhoneInput.value = res.data.customer.customer_phone_number;
+                    }
+                  } catch (error) {
+                    // Silently handle error - customer not found is normal for new vehicles
+                  }
+                }
+              }}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             />
           </div>
@@ -659,7 +675,7 @@ const InvoiceManagement = () => {
               <option value="">Select a product</option>
               {products.map((product) => (
                 <option key={product._id} value={product._id}>
-                  {product.name} - ${product.sell}
+                  {product.name}
                 </option>
               ))}
             </select>
@@ -731,7 +747,7 @@ const InvoiceManagement = () => {
               readOnly
               className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 dark:bg-gray-600 dark:border-gray-600 dark:text-white cursor-not-allowed"
             />
-            <p className="text-xs text-gray-500 dark:text-gray-400">Formula: (Price × Quantity) - Discount</p>
+
           </div>
 
           {/* Discount */}

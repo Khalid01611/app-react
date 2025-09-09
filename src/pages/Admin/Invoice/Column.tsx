@@ -63,6 +63,15 @@ export const getColumns = ({
       ),
     },
     {
+      header: "Vehicle No",
+      accessor: "vehicle_no",
+      cell: (row) => (
+        <div className="text-sm text-gray-900 dark:text-gray-100">
+          {row.vehicle_no || "-"}
+        </div>
+      ),
+    },
+    {
       header: "Customer",
       accessor: "customer_name",
       cell: (row) => (
@@ -85,9 +94,8 @@ export const getColumns = ({
       header: "Seller",
       accessor: "seller",
       cell: (row) => (
-        <div>
-          <div className="font-medium text-gray-900 dark:text-gray-100">{row.seller.name}</div>
-          <div className="text-sm text-gray-500 dark:text-gray-400">{row.seller.email}</div>
+        <div className="font-medium text-gray-900 dark:text-gray-100">
+          {row.seller.name}
         </div>
       ),
     },
