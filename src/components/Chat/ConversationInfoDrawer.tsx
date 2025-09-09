@@ -34,6 +34,38 @@ const ConversationInfoDrawer: React.FC<Props> = ({ open, onClose, conversation, 
   const [loading, setLoading] = useState(false);
   const [showMemberPicker, setShowMemberPicker] = useState(false);
 
+  const getMemberStatusText = (member: any) => {
+    if (member.presence?.isOnline) {
+      return "Online";
+    } else if (member.presence?.lastSeen) {
+      const lastSeen = new Date(member.presence.lastSeen);
+      const now = new Date();
+      const diffInMinutes = Math.floor((now.getTime() - lastSeen.getTime()) / (1000 * 60));
+      
+      if (diffInMinutes < 1) return "Just now";
+      if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+      if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}h ago`;
+      return `${Math.floor(diffInMinutes / 1440)}d ago`;
+    }
+    return "Offline";
+  };
+
+  const getDirectUserStatusText = (user: any) => {
+    if (user?.presence?.isOnline) {
+      return "Online";
+    } else if (user?.presence?.lastSeen) {
+      const lastSeen = new Date(user.presence.lastSeen);
+      const now = new Date();
+      const diffInMinutes = Math.floor((now.getTime() - lastSeen.getTime()) / (1000 * 60));
+      
+      if (diffInMinutes < 1) return "Just now";
+      if (diffInMinutes < 60) return `Last seen ${diffInMinutes}m ago`;
+      if (diffInMinutes < 1440) return `Last seen ${Math.floor(diffInMinutes / 60)}h ago`;
+      return `Last seen ${Math.floor(diffInMinutes / 1440)}d ago`;
+    }
+    return "Offline";
+  };
+
   const other = conversation.type === "direct" ? conversation.participants.find((p) => p._id !== currentUserId) : null;
   const members = conversation.participants;
   const isGroup = conversation.type === "group";
@@ -180,9 +212,9 @@ const ConversationInfoDrawer: React.FC<Props> = ({ open, onClose, conversation, 
                 <div className="font-bold text-xl text-gray-900 dark:text-white">{other?.name}</div>
                 <div className="text-gray-500 dark:text-gray-400">{other?.email}</div>
                 <div className="flex items-center space-x-2 mt-1">
-                  <div className={`w-2 h-2 rounded-full ${other?.presence?.isOnline ? 'bg-emerald-500 animate-pulse' : 'bg-slate-500'}`}></div>
-                  <span className="text-sm text-slate-400">
-                    {other?.presence?.isOnline ? 'Online' : 'Offline'}
+                  <div className={`w-2 h-2 rounded-full ${other?.presence?.isOnline ? 'bg-emerald-500 animate-pulse' : 'bg-gray-500 dark:bg-gray-600'}`}></div>
+                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                    {getDirectUserStatusText(other)}
                   </span>
                 </div>
               </div>
@@ -264,16 +296,16 @@ const ConversationInfoDrawer: React.FC<Props> = ({ open, onClose, conversation, 
                           {m.name.charAt(0).toUpperCase()}
                         </div>
                         <div>
-                          <div className="text-sm font-semibold text-white flex items-center space-x-2">
+                          <div className="text-sm font-semibold text-gray-900 dark:text-white flex items-center space-x-2">
                             <span>{m.name}</span>
                             {isMemberAdmin && (
                               <Crown size={14} className="text-yellow-500" />
                             )}
                           </div>
-                          <div className="text-xs text-slate-400">{m.email}</div>
+                          <div className="text-xs text-gray-600 dark:text-gray-400">{m.email}</div>
                           <div className="flex items-center space-x-2 mt-1">
-                            <div className={`w-1.5 h-1.5 rounded-full ${m.presence?.isOnline ? 'bg-emerald-500' : 'bg-slate-500'}`}></div>
-                            <span className="text-xs text-slate-500">{m.presence?.isOnline ? "Online" : "Offline"}</span>
+                            <div className={`w-1.5 h-1.5 rounded-full ${m.presence?.isOnline ? 'bg-emerald-500 animate-pulse' : 'bg-gray-500 dark:bg-gray-600'}`}></div>
+                            <span className="text-xs text-gray-600 dark:text-gray-500">{getMemberStatusText(m)}</span>
                           </div>
                         </div>
                       </div>

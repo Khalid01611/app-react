@@ -10,6 +10,7 @@ class ChatSocketService {
   // Queue read events to avoid errors when offline
   private pendingReadMessageIds: Set<string> = new Set();
   private pendingReadConversationIds: Set<string> = new Set();
+  private presenceInterval: NodeJS.Timeout | null = null;
 
   // Event listeners
   private listeners: Map<string, Function[]> = new Map();
@@ -55,6 +56,14 @@ class ChatSocketService {
       // Set user online immediately when connected
       this.socket!.emit('user_online');
       
+      // Start presence heartbeat
+      this.startPresenceHeartbeat();
+      
+      // Request updated presence for all users
+      setTimeout(() => {
+        this.requestPresenceUpdate();
+      }, 1000);
+      
       // Flush pending read acknowledgements
       try {
         if (this.pendingReadConversationIds.size) {
@@ -74,6 +83,7 @@ class ChatSocketService {
 
     this.socket.on("disconnect", () => {
       this.isConnected = false;
+      this.stopPresenceHeartbeat();
       this.emit("socket_disconnected");
     });
 
@@ -108,6 +118,14 @@ class ChatSocketService {
 
     this.socket.on("user_presence", (data: any) => {
       this.emit("user_presence", data);
+    });
+
+    this.socket.on("user_online", (data: any) => {
+      this.emit("user_presence", { ...data, isOnline: true, lastSeen: new Date().toISOString() });
+    });
+
+    this.socket.on("user_offline", (data: any) => {
+      this.emit("user_presence", { ...data, isOnline: false, lastSeen: new Date().toISOString() });
     });
 
     // Unread counters updated
@@ -263,6 +281,10 @@ class ChatSocketService {
   // Disconnect
   disconnect() {
     if (!this.socket) return;
+    
+    // Stop presence heartbeat
+    this.stopPresenceHeartbeat();
+    
     // Set user offline before disconnecting
     if (this.socket.connected) {
       this.socket.emit('user_offline');
@@ -327,6 +349,32 @@ class ChatSocketService {
   // Get connection status
   getConnectionStatus() {
     return this.isConnected;
+  }
+
+  // Request updated presence for all users
+  requestPresenceUpdate() {
+    if (!this.socket || !this.isConnected) return;
+    this.socket.emit('request_presence_update');
+  }
+
+  // Periodic presence heartbeat
+  startPresenceHeartbeat() {
+    if (this.presenceInterval) {
+      clearInterval(this.presenceInterval);
+    }
+    
+    this.presenceInterval = setInterval(() => {
+      if (this.socket && this.isConnected && !document.hidden) {
+        this.socket.emit('user_online');
+      }
+    }, 30000); // Every 30 seconds
+  }
+
+  stopPresenceHeartbeat() {
+    if (this.presenceInterval) {
+      clearInterval(this.presenceInterval);
+      this.presenceInterval = null;
+    }
   }
 
   // Forward message to another conversation

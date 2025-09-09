@@ -176,6 +176,14 @@ const MessengerPage: React.FC = () => {
 
       chatSocketService.on("user_presence", (data: any) => {
         dispatch(updateUserPresence(data));
+        
+        // Force re-render of conversations to show updated status
+        if (data.userId) {
+          // Trigger a minimal state update to force component re-render
+          setTimeout(() => {
+            dispatch(fetchConversations());
+          }, 100);
+        }
       });
 
 
@@ -265,6 +273,19 @@ const MessengerPage: React.FC = () => {
       dispatch(fetchConversations());
     }
   }, [dispatch, user]);
+
+  // Periodic presence refresh
+  useEffect(() => {
+    if (!user) return;
+    
+    const presenceRefreshInterval = setInterval(() => {
+      if (chatSocketService.getConnectionStatus()) {
+        chatSocketService.requestPresenceUpdate();
+      }
+    }, 60000); // Every minute
+    
+    return () => clearInterval(presenceRefreshInterval);
+  }, [user]);
 
   // Handle errors
   useEffect(() => {
@@ -540,6 +561,7 @@ const MessengerPage: React.FC = () => {
             loading={loading}
             currentUserId={user?.id || user?._id}
             query={searchQuery}
+            typingUsers={typingUsers}
           />
         </div>
 

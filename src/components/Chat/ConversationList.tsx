@@ -9,6 +9,7 @@ interface ConversationListProps {
   loading: boolean;
   currentUserId: string;
   query?: string;
+  typingUsers?: { [conversationId: string]: string[] };
 }
 
 const ConversationList: React.FC<ConversationListProps> = ({
@@ -19,6 +20,7 @@ const ConversationList: React.FC<ConversationListProps> = ({
   loading,
   currentUserId,
   query = "",
+  typingUsers = {},
 }) => {
    const formatLastMessage = (message: any) => {
     if (!message) return "No messages yet";
@@ -87,6 +89,32 @@ const ConversationList: React.FC<ConversationListProps> = ({
     const me = (currentUserId || "").toString();
     const other = conversation.participants.find((p: any) => (p._id || p).toString() !== me);
     return !!other?.presence?.isOnline;
+  };
+
+  const getLastSeenText = (conversation: IConversation) => {
+    if (conversation.type === "group") {
+      const onlineCount = getOnlineParticipants(conversation);
+      const totalMembers = conversation.participants.length;
+      return `${totalMembers} members • ${onlineCount} online`;
+    }
+    
+    const me = (currentUserId || "").toString();
+    const other = conversation.participants.find((p: any) => (p._id || p).toString() !== me);
+    
+    if (other?.presence?.isOnline) {
+      return "Online";
+    } else if (other?.presence?.lastSeen) {
+      const lastSeen = new Date(other.presence.lastSeen);
+      const now = new Date();
+      const diffInMinutes = Math.floor((now.getTime() - lastSeen.getTime()) / (1000 * 60));
+      
+      if (diffInMinutes < 1) return "Just now";
+      if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+      if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}h ago`;
+      return `${Math.floor(diffInMinutes / 1440)}d ago`;
+    }
+    
+    return "Offline";
   };
 
    const isConversationActive = (conversation: IConversation) => currentConversation?._id === conversation._id;
@@ -186,13 +214,22 @@ const ConversationList: React.FC<ConversationListProps> = ({
 
                 {/* Online indicator */}
                 {conversation.type === "direct" && isOtherDirectUserOnline(conversation) && (
-                  <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-gradient-to-r from-green-400 to-emerald-500 border-3 border-white dark:border-gray-800 rounded-full shadow-lg animate-pulse"></div>
+                  <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-gradient-to-r from-green-400 to-emerald-500 border-3 border-white dark:border-gray-800 rounded-full shadow-lg">
+                    <div className="w-full h-full bg-emerald-500 rounded-full animate-pulse"></div>
+                  </div>
                 )}
 
                 {/* Group online count */}
                 {conversation.type === "group" && onlineCount > 0 && (
                   <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-gradient-to-r from-green-400 to-emerald-500 border-3 border-white dark:border-gray-800 rounded-full flex items-center justify-center shadow-lg">
                     <span className="text-xs text-white font-bold">{onlineCount}</span>
+                  </div>
+                )}
+
+                {/* Typing indicator for this conversation */}
+                {(typingUsers[conversation._id] || []).length > 0 && (
+                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 border-2 border-white dark:border-gray-800 rounded-full flex items-center justify-center">
+                    <div className="w-2 h-2 bg-white rounded-full animate-bounce"></div>
                   </div>
                 )}
               </div>
@@ -220,11 +257,18 @@ const ConversationList: React.FC<ConversationListProps> = ({
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <p className={`text-sm truncate flex-1 transition-colors duration-300 ${
-                    isActive ? "text-gray-300" : "text-gray-600 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300"
-                  }`}>
-                    {formatLastMessage(conversation.lastMessage)}
-                  </p>
+                  <div className="flex-1 min-w-0">
+                    <p className={`text-sm truncate transition-colors duration-300 ${
+                      isActive ? "text-gray-300" : "text-gray-600 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300"
+                    }`}>
+                      {formatLastMessage(conversation.lastMessage)}
+                    </p>
+                    <p className={`text-xs truncate mt-1 transition-colors duration-300 ${
+                      isActive ? "text-gray-400" : "text-gray-500 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-400"
+                    }`}>
+                      {getLastSeenText(conversation)}
+                    </p>
+                  </div>
 
                   {/* Unread count for current user */}
                   {conversation.unreadCount && conversation.unreadCount[currentUserId] > 0 && (

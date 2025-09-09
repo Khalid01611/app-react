@@ -185,6 +185,25 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     return conversation.participants.filter((p) => p._id !== currentUserId && p.presence?.isOnline).length;
   };
 
+  const getDirectUserStatusText = () => {
+    const otherUser = conversation.participants.find((p) => p._id !== currentUserId);
+    
+    if (otherUser?.presence?.isOnline) {
+      return "Online";
+    } else if (otherUser?.presence?.lastSeen) {
+      const lastSeen = new Date(otherUser.presence.lastSeen);
+      const now = new Date();
+      const diffInMinutes = Math.floor((now.getTime() - lastSeen.getTime()) / (1000 * 60));
+      
+      if (diffInMinutes < 1) return "Just now";
+      if (diffInMinutes < 60) return `Last seen ${diffInMinutes}m ago`;
+      if (diffInMinutes < 1440) return `Last seen ${Math.floor(diffInMinutes / 60)}h ago`;
+      return `Last seen ${Math.floor(diffInMinutes / 1440)}d ago`;
+    }
+    
+    return "Offline";
+  };
+
   const getTypingText = () => {
     if (filteredTypingUsers.length === 0) return null;
 
@@ -251,7 +270,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                       ? 'bg-emerald-500 animate-pulse' 
                       : 'bg-gray-400 dark:bg-gray-500'
                   }`}></span>
-                  {conversation.participants.find((p) => p._id !== currentUserId)?.presence?.isOnline ? "Online" : "Offline"}
+                  {getDirectUserStatusText()}
                 </>
               )}
             </p>
