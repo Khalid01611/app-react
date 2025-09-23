@@ -1,0 +1,442 @@
+import io from "socket.io-client";
+import { getCookie } from "../utils/Storage";
+import { hexToString } from "../utils/Lib";
+
+class ChatSocketService {
+  private socket: any | null = null;
+  private isConnected = false;
+  private maxReconnectAttempts = 5;
+  private reconnectDelay = 1000;
+  // Queue read events to avoid errors when offline
+  private pendingReadMessageIds: Set<string> = new Set();
+  private pendingReadConversationIds: Set<string> = new Set();
+  private presenceInterval: NodeJS.Timeout | null = null;
+
+  // Event listeners
+  private listeners: Map<string, Function[]> = new Map();
+
+  connect() {
+    if (this.socket && this.isConnected) {
+      return;
+    }
+
+    const token = getCookie("rt");
+    const authToken = hexToString(token as string);
+
+    if (!authToken) {
+      return;
+    }
+
+    // Avoid duplicate connection attempts
+    if (this.socket && (this.socket.connected || (this.socket as any).active)) {
+      return;
+    }
+
+    this.socket = io("http://localhost:8000", {
+      auth: { token: authToken },
+      // Start with polling to avoid benign dev warning when closing before WS is up
+      transports: ["polling", "websocket"],
+      // Rely on built-in reconnection instead of manual reconnect loop
+      reconnection: true,
+      reconnectionAttempts: this.maxReconnectAttempts,
+      reconnectionDelay: this.reconnectDelay,
+      reconnectionDelayMax: 5000,
+    });
+
+    this.setupEventListeners();
+  }
+
+  private setupEventListeners() {
+    if (!this.socket) return;
+
+    this.socket.on("connect", () => {
+      this.isConnected = true;
+      this.emit("socket_connected");
+      
+      // Set user online immediately when connected
+      this.socket!.emit('user_online');
+      
+      // Start presence heartbeat
+      this.startPresenceHeartbeat();
+      
+      // Request updated presence for all users
+      setTimeout(() => {
+        this.requestPresenceUpdate();
+      }, 1000);
+      
+      // Flush pending read acknowledgements
+      try {
+        if (this.pendingReadConversationIds.size) {
+          this.pendingReadConversationIds.forEach((convId) => {
+            try { this.socket!.emit("mark_as_read", { conversationId: convId }); } catch {}
+          });
+          this.pendingReadConversationIds.clear();
+        }
+        if (this.pendingReadMessageIds.size) {
+          this.pendingReadMessageIds.forEach((msgId) => {
+            try { this.socket!.emit("mark_as_read", { messageId: msgId }); } catch {}
+          });
+          this.pendingReadMessageIds.clear();
+        }
+      } catch {}
+    });
+
+    this.socket.on("disconnect", () => {
+      this.isConnected = false;
+      this.stopPresenceHeartbeat();
+      this.emit("socket_disconnected");
+    });
+
+    this.socket.on("connect_error", () => {
+      // Let Socket.IO built-in reconnection handle retry
+    });
+
+    // Chat events
+    this.socket.on("new_message", (message: any) => {
+      this.emit("new_message", message);
+    });
+
+    this.socket.on("message_edited", (data: any) => {
+      this.emit("message_edited", data);
+    });
+
+    this.socket.on("message_deleted", (data: any) => {
+      this.emit("message_deleted", data);
+    });
+
+    this.socket.on("message_reaction", (data: any) => {
+      this.emit("message_reaction", data);
+    });
+
+    this.socket.on("typing_start", (data: any) => {
+      this.emit("typing_start", data);
+    });
+
+    this.socket.on("typing_stop", (data: any) => {
+      this.emit("typing_stop", data);
+    });
+
+    this.socket.on("user_presence", (data: any) => {
+      this.emit("user_presence", data);
+    });
+
+    this.socket.on("user_online", (data: any) => {
+      this.emit("user_presence", { ...data, isOnline: true, lastSeen: new Date().toISOString() });
+    });
+
+    this.socket.on("user_offline", (data: any) => {
+      this.emit("user_presence", { ...data, isOnline: false, lastSeen: new Date().toISOString() });
+    });
+
+    // Unread counters updated
+    this.socket.on("unread_counts_updated", (data: any) => {
+      this.emit("unread_counts_updated", data);
+    });
+
+    // Error events
+    this.socket.on("message_error", (error: any) => {
+      this.emit("message_error", error);
+    });
+
+    this.socket.on("reaction_error", (error: any) => {
+      this.emit("reaction_error", error);
+    });
+
+    this.socket.on("edit_error", (error: any) => {
+      this.emit("edit_error", error);
+    });
+
+    this.socket.on("delete_error", (error: any) => {
+      this.emit("delete_error", error);
+    });
+    this.socket.on("read_error", (error: any) => {
+      this.emit("read_error", error);
+    });
+
+    // Set up page visibility listener
+    this.setupVisibilityListener();
+
+    // WebRTC signaling events
+    this.socket.on("call_invite", (data: any) => this.emit("call_invite", data));
+    this.socket.on("call_cancelled", (data: any) => this.emit("call_cancelled", data));
+    this.socket.on("call_accepted", (data: any) => this.emit("call_accepted", data));
+    this.socket.on("call_rejected", (data: any) => this.emit("call_rejected", data));
+    this.socket.on("webrtc_signal", (data: any) => this.emit("webrtc_signal", data));
+  }
+
+  // Removed manual reconnect; rely on Socket.IO built-in reconnection
+
+  // Send message
+  sendMessage(data: {
+    conversationId: string;
+    content: string;
+    messageType?: string;
+    mediaUrl?: string;
+    fileName?: string;
+    fileSize?: number;
+    duration?: number;
+    replyTo?: string;
+  }) {
+    if (!this.socket || !this.isConnected) {
+      this.emit("message_error", { error: "Not connected" });
+      return;
+    }
+    this.socket.emit("send_message", data, (ack: any) => {
+      if (!ack?.success) {
+        this.emit("message_error", { error: ack?.error || "Failed to send message" });
+      }
+    });
+  }
+
+  // Typing indicators
+  startTyping(conversationId: string) {
+    if (!this.socket || !this.isConnected) return;
+    this.socket.emit("typing_start", { conversationId });
+  }
+
+  stopTyping(conversationId: string) {
+    if (!this.socket || !this.isConnected) return;
+    this.socket.emit("typing_stop", { conversationId });
+  }
+
+  // Message reactions
+  reactToMessage(messageId: string, reactionType: string, emoji: string) {
+    if (!this.socket || !this.isConnected) {
+      throw new Error("Socket not connected");
+    }
+    this.socket.emit("react_to_message", { messageId, reactionType, emoji });
+  }
+
+  // Mark message as read
+  markAsRead(messageId: string) {
+    if (!this.socket || !this.isConnected) {
+      this.pendingReadMessageIds.add(messageId);
+      return;
+    }
+    try {
+      this.socket.emit("mark_as_read", { messageId });
+    } catch {
+      this.pendingReadMessageIds.add(messageId);
+    }
+  }
+
+  // Mark entire conversation as read
+  markConversationAsRead(conversationId: string) {
+    if (!this.socket || !this.isConnected) {
+      this.pendingReadConversationIds.add(conversationId);
+      return;
+    }
+    try {
+      this.socket.emit("mark_as_read", { conversationId });
+    } catch {
+      this.pendingReadConversationIds.add(conversationId);
+    }
+  }
+
+  // Edit message
+  editMessage(messageId: string, content: string) {
+    if (!this.socket || !this.isConnected) {
+      throw new Error("Socket not connected");
+    }
+    this.socket.emit("edit_message", { messageId, content });
+  }
+
+  // Delete message
+  deleteMessage(messageId: string) {
+    if (!this.socket || !this.isConnected) {
+      throw new Error("Socket not connected");
+    }
+    this.socket.emit("delete_message", { messageId });
+  }
+
+  // Event listeners
+  on(event: string, callback: Function) {
+    if (!this.listeners.has(event)) {
+      this.listeners.set(event, []);
+    }
+    this.listeners.get(event)!.push(callback);
+  }
+
+  off(event: string, callback?: Function) {
+    if (!callback) {
+      this.listeners.delete(event);
+    } else {
+      const callbacks = this.listeners.get(event);
+      if (callbacks) {
+        const index = callbacks.indexOf(callback);
+        if (index > -1) {
+          callbacks.splice(index, 1);
+        }
+      }
+    }
+  }
+
+  private emit(event: string, data?: any) {
+    const callbacks = this.listeners.get(event);
+    if (callbacks) {
+      callbacks.forEach((callback) => callback(data));
+    }
+  }
+
+  // Disconnect
+  disconnect() {
+    if (!this.socket) return;
+    
+    // Stop presence heartbeat
+    this.stopPresenceHeartbeat();
+    
+    // Set user offline before disconnecting
+    if (this.socket.connected) {
+      this.socket.emit('user_offline');
+      this.socket.disconnect();
+    }
+    this.socket = null;
+    this.isConnected = false;
+    this.listeners.clear();
+  }
+
+  private setupVisibilityListener() {
+    if (typeof document === 'undefined') return;
+
+    const handleVisibilityChange = () => {
+      if (!this.socket || !this.isConnected) return;
+      
+      if (document.hidden) {
+        this.socket.emit('user_offline');
+      } else {
+        this.socket.emit('user_online');
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    // Set online when page loads if not hidden
+    if (!document.hidden && this.socket && this.isConnected) {
+      this.socket.emit('user_online');
+    }
+
+    // Handle page unload
+    window.addEventListener('beforeunload', () => {
+      if (this.socket && this.isConnected) {
+        this.socket.emit('user_offline');
+      }
+    });
+
+    // Handle focus/blur events for additional reliability
+    window.addEventListener('focus', () => {
+      if (this.socket && this.isConnected) {
+        this.socket.emit('user_online');
+      }
+    });
+
+    window.addEventListener('blur', () => {
+      if (this.socket && this.isConnected) {
+        this.socket.emit('user_offline');
+      }
+    });
+  }
+
+  setUserOnline() {
+    if (!this.socket || !this.isConnected) return;
+    this.socket.emit('user_online');
+  }
+
+  setUserOffline() {
+    if (!this.socket || !this.isConnected) return;
+    this.socket.emit('user_offline');
+  }
+
+  // Get connection status
+  getConnectionStatus() {
+    return this.isConnected;
+  }
+
+  // Request updated presence for all users
+  requestPresenceUpdate() {
+    if (!this.socket || !this.isConnected) return;
+    this.socket.emit('request_presence_update');
+  }
+
+  // Periodic presence heartbeat
+  startPresenceHeartbeat() {
+    if (this.presenceInterval) {
+      clearInterval(this.presenceInterval);
+    }
+    
+    this.presenceInterval = setInterval(() => {
+      if (this.socket && this.isConnected && !document.hidden) {
+        this.socket.emit('user_online');
+      }
+    }, 30000); // Every 30 seconds
+  }
+
+  stopPresenceHeartbeat() {
+    if (this.presenceInterval) {
+      clearInterval(this.presenceInterval);
+      this.presenceInterval = null;
+    }
+  }
+
+  // Forward message to another conversation
+  forwardMessage(messageId: string, targetConversationId: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      if (!this.socket || !this.isConnected) {
+        reject(new Error("Socket not connected"));
+        return;
+      }
+
+      this.socket.emit("forward_message", {
+        messageId,
+        targetConversationId,
+      }, (response: any) => {
+        if (response.success) {
+          resolve(response.message);
+        } else {
+          reject(new Error(response.error || "Failed to forward message"));
+        }
+      });
+    });
+  }
+
+  // --- WebRTC signaling API ---
+  inviteToCall(payload: {
+    conversationId: string;
+    callType: "audio" | "video";
+  }) {
+    if (!this.socket || !this.isConnected) throw new Error("Socket not connected");
+    this.socket.emit("call_invite", payload);
+  }
+
+  cancelCall(payload: { conversationId: string }) {
+    if (!this.socket || !this.isConnected) throw new Error("Socket not connected");
+    this.socket.emit("call_cancelled", payload);
+  }
+
+  acceptCall(payload: { conversationId: string }) {
+    if (!this.socket || !this.isConnected) throw new Error("Socket not connected");
+    this.socket.emit("call_accepted", payload);
+  }
+
+  rejectCall(payload: { conversationId: string; reason?: string }) {
+    if (!this.socket || !this.isConnected) throw new Error("Socket not connected");
+    this.socket.emit("call_rejected", payload);
+  }
+
+  sendWebRTCSignal(payload: {
+    conversationId: string;
+    signal: any; // SDP or ICE
+  }) {
+    if (!this.socket || !this.isConnected) throw new Error("Socket not connected");
+    this.socket.emit("webrtc_signal", payload);
+  }
+
+  joinCallRoom(conversationId: string) {
+    if (!this.socket || !this.isConnected) return;
+    this.socket.emit("join_call_room", { conversationId });
+  }
+}
+
+// Create singleton instance
+const chatSocketService = new ChatSocketService();
+
+export default chatSocketService;
