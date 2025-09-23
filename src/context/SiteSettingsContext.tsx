@@ -1,5 +1,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react"
+import { useSelector } from "react-redux"
 import request from "../service/AxiosInstance"
+import type { RootState } from "../interface/types"
 
 interface SiteSettings {
   siteName: string
@@ -26,6 +28,7 @@ export const useSiteSettings = () => {
 }
 
 export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {
+  const { user } = useSelector((state: RootState) => state.auth)
   const [siteSettings, setSiteSettings] = useState<SiteSettings>({
     siteName: "EastWest App",
     logo: "",
@@ -33,9 +36,12 @@ export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {
     email: "",
     address: ""
   })
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
 
   const fetchSiteSettings = async () => {
+    if (!user) return
+    
+    setLoading(true)
     try {
       const res = await request.get("/api/admin/site-settings")
       setSiteSettings({
@@ -53,8 +59,10 @@ export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {
   }
 
   useEffect(() => {
-    fetchSiteSettings()
-  }, [])
+    if (user) {
+      fetchSiteSettings()
+    }
+  }, [user])
 
   const refreshSettings = () => {
     fetchSiteSettings()
