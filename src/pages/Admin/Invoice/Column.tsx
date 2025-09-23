@@ -48,7 +48,7 @@ export const getColumns = ({
       header: "Invoice No",
       accessor: "invoice_no",
       cell: (row) => (
-        <div className="font-medium text-gray-900 dark:text-gray-100">
+        <div className="font-medium">
           {row.invoice_no}
         </div>
       ),
@@ -57,7 +57,7 @@ export const getColumns = ({
       header: "Date",
       accessor: "date_time",
       cell: (row) => (
-        <div className="text-sm text-gray-600 dark:text-gray-400">
+        <div className="text-sm">
           {new Date(row.date_time).toLocaleDateString()}
         </div>
       ),
@@ -66,7 +66,7 @@ export const getColumns = ({
       header: "Vehicle No",
       accessor: "vehicle_no",
       cell: (row) => (
-        <div className="text-sm text-gray-900 dark:text-gray-100">
+        <div className="text-sm">
           {row.vehicle_no || "-"}
         </div>
       ),
@@ -76,8 +76,8 @@ export const getColumns = ({
       accessor: "customer_name",
       cell: (row) => (
         <div>
-          <div className="font-medium text-gray-900 dark:text-gray-100">{row.customer_name}</div>
-          <div className="text-sm text-gray-500 dark:text-gray-400">{row.customer_phone_number}</div>
+          <div className="font-medium">{row.customer_name}</div>
+          <div className="text-sm">{row.customer_phone_number}</div>
         </div>
       ),
     },
@@ -85,7 +85,7 @@ export const getColumns = ({
       header: "Product",
       accessor: "product",
       cell: (row) => (
-        <div className="text-sm text-gray-900 dark:text-gray-100">
+        <div className="text-sm">
           {row.product.name}
         </div>
       ),
@@ -94,7 +94,7 @@ export const getColumns = ({
       header: "Seller",
       accessor: "seller",
       cell: (row) => (
-        <div className="font-medium text-gray-900 dark:text-gray-100">
+        <div className="font-medium">
           {row.seller.name}
         </div>
       ),
@@ -104,7 +104,7 @@ export const getColumns = ({
       accessor: "total_amount",
       cell: (row) => (
         <div className="text-right">
-          <div className="font-medium text-gray-900 dark:text-gray-100">
+          <div className="font-medium">
             ৳{row.total_amount.toFixed(2)}
           </div>
         </div>
@@ -116,10 +116,10 @@ export const getColumns = ({
       cell: (row) => (
         <div className="flex items-center">
           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${row.payment_method === 'cash'
-              ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+              ? 'bg-green-100 dark:bg-green-900'
               : row.payment_method === 'credit' || row.payment_method === 'due'
-                ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'
-                : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
+                ? 'bg-yellow-100 dark:bg-yellow-900'
+                : 'bg-blue-100 dark:bg-blue-900'
             }`}>
             {row.payment_method}
           </span>
@@ -132,8 +132,8 @@ export const getColumns = ({
       cell: (row) => (
         <div className="flex items-center">
           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${row.is_sent_sms === true
-              ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
-              : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'
+              ? 'bg-green-100 dark:bg-green-900'
+              : 'bg-yellow-100 dark:bg-yellow-900'
             }`}>
             {row.is_sent_sms === true ? "Sent" : "Not Sent"}
           </span>

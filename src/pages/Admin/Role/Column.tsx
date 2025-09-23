@@ -29,13 +29,13 @@ export const getColumns = ({ onEdit, onDelete }: { onEdit: (row: any) => void; o
           row.permissions.map((perm: Permission) => (
             <span
               key={perm._id}
-              className="inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300"
+              className="inline-block bg-blue-100 text-xs font-semibold px-2.5 py-0.5 rounded dark:bg-blue-900"
             >
               {perm.name}
             </span>
           ))
         ) : (
-          <span className="text-gray-500 text-sm dark:text-gray-400">No permissions</span>
+          <span className="text-sm">No permissions</span>
         )}
       </div>
     ),

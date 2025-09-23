@@ -329,50 +329,50 @@ const ReportManagement = () => {
       {/* Stats Cards */}
       {stats && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <div className="flex items-center">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <FiShoppingCart className="h-6 w-6 text-blue-600" />
+              <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
+                <FiShoppingCart className="h-6 w-6 text-blue-600 dark:text-blue-400" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Invoices</p>
-                <p className="text-2xl font-semibold text-gray-900">{stats.totalInvoices}</p>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Invoices</p>
+                <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{stats.totalInvoices}</p>
               </div>
             </div>
           </div>
           
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <div className="flex items-center">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <FiDollarSign className="h-6 w-6 text-green-600" />
+              <div className="p-2 bg-green-100 dark:bg-green-900 rounded-lg">
+                <FiDollarSign className="h-6 w-6 text-green-600 dark:text-green-400" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Revenue</p>
-                <p className="text-2xl font-semibold text-gray-900">৳{stats.totalRevenue.toFixed(2)}</p>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Revenue</p>
+                <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">৳{stats.totalRevenue.toFixed(2)}</p>
               </div>
             </div>
           </div>
           
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <div className="flex items-center">
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <FiTrendingUp className="h-6 w-6 text-purple-600" />
+              <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
+                <FiTrendingUp className="h-6 w-6 text-purple-600 dark:text-purple-400" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Profit</p>
-                <p className="text-2xl font-semibold text-gray-900">৳{stats.totalProfit.toFixed(2)}</p>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Profit</p>
+                <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">৳{stats.totalProfit.toFixed(2)}</p>
               </div>
             </div>
           </div>
           
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <div className="flex items-center">
-              <div className="p-2 bg-orange-100 rounded-lg">
-                                 <FiBarChart className="h-6 w-6 text-orange-600" />
+              <div className="p-2 bg-orange-100 dark:bg-orange-900 rounded-lg">
+                <FiBarChart className="h-6 w-6 text-orange-600 dark:text-orange-400" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Avg Order Value</p>
-                <p className="text-2xl font-semibold text-gray-900">৳{stats.averageOrderValue.toFixed(2)}</p>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Avg Order Value</p>
+                <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">৳{stats.averageOrderValue.toFixed(2)}</p>
               </div>
             </div>
           </div>
@@ -380,7 +380,7 @@ const ReportManagement = () => {
       )}
 
       {/* Date Range Quick Filters */}
-      <div className="bg-white rounded-lg shadow p-4 mb-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 mb-6">
         <div className="flex flex-wrap gap-2">
           {(["today", "week", "month", "quarter", "year", "custom"] as const).map((range) => (
             <Button
@@ -399,11 +399,11 @@ const ReportManagement = () => {
       <Dialog header="Advanced Filter" visible={modals.filter} onHide={() => closeModal("filter")}>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Payment Method</label>
             <select
               value={filters.payment_method}
               onChange={(e) => setFilters(prev => ({ ...prev, payment_method: e.target.value }))}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:border-blue-500 focus:outline-none"
+              className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md px-3 py-2 focus:border-blue-500 focus:outline-none"
             >
               <option value="">All Methods</option>
               <option value="cash">Cash</option>
@@ -416,57 +416,57 @@ const ReportManagement = () => {
           
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Start Date</label>
               <input
                 type="date"
                 value={filters.startDate}
                 onChange={(e) => setFilters(prev => ({ ...prev, startDate: e.target.value }))}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:border-blue-500 focus:outline-none"
+                className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md px-3 py-2 focus:border-blue-500 focus:outline-none"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">End Date</label>
               <input
                 type="date"
                 value={filters.endDate}
                 onChange={(e) => setFilters(prev => ({ ...prev, endDate: e.target.value }))}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:border-blue-500 focus:outline-none"
+                className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md px-3 py-2 focus:border-blue-500 focus:outline-none"
               />
             </div>
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Customer Search</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Customer Search</label>
             <input
               type="text"
               value={filters.customer}
               onChange={(e) => setFilters(prev => ({ ...prev, customer: e.target.value }))}
               placeholder="Search by customer name or phone"
-              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:border-blue-500 focus:outline-none"
+              className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md px-3 py-2 focus:border-blue-500 focus:outline-none"
             />
           </div>
           
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Min Amount</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Min Amount</label>
               <input
                 type="number"
                 value={filters.minAmount}
                 onChange={(e) => setFilters(prev => ({ ...prev, minAmount: e.target.value }))}
                 placeholder="0.00"
                 step="0.01"
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:border-blue-500 focus:outline-none"
+                className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md px-3 py-2 focus:border-blue-500 focus:outline-none"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Max Amount</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Max Amount</label>
               <input
                 type="number"
                 value={filters.maxAmount}
                 onChange={(e) => setFilters(prev => ({ ...prev, maxAmount: e.target.value }))}
                 placeholder="0.00"
                 step="0.01"
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:border-blue-500 focus:outline-none"
+                className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md px-3 py-2 focus:border-blue-500 focus:outline-none"
               />
             </div>
           </div>
@@ -500,7 +500,7 @@ const ReportManagement = () => {
       <Dialog header="Export Report" visible={modals.export} onHide={() => closeModal("export")}>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Export Format</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Export Format</label>
             <div className="space-y-2">
               <label className="flex items-center">
                 <input
@@ -527,9 +527,9 @@ const ReportManagement = () => {
             </div>
           </div>
           
-          <div className="bg-gray-50 p-3 rounded-md">
-            <h4 className="font-medium text-gray-700 mb-2">Export will include:</h4>
-            <ul className="text-sm text-gray-600 space-y-1">
+          <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded-md">
+            <h4 className="font-medium text-gray-700 dark:text-gray-300 mb-2">Export will include:</h4>
+            <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
               <li>• Invoice details and customer information</li>
               <li>• Product details and pricing</li>
               <li>• Payment method and status</li>

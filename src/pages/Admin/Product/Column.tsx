@@ -30,7 +30,7 @@ export const getColumns = ({
     header: "Product Name",
     accessor: "name",
     cell: (row) => (
-      <div className="font-medium text-gray-900 dark:text-gray-100">
+      <div className="font-medium">
         {row.name}
       </div>
     ),
@@ -39,7 +39,7 @@ export const getColumns = ({
     header: "Purchase Price",
     accessor: "purchases",
     cell: (row) => (
-      <div className="text-sm text-gray-600 dark:text-gray-400">
+      <div className="text-sm">
         ৳{row.purchases.toFixed(2)}
       </div>
     ),
@@ -48,7 +48,7 @@ export const getColumns = ({
     header: "Sell Price",
     accessor: "sell",
     cell: (row) => (
-      <div className="text-sm text-gray-600 dark:text-gray-400">
+      <div className="text-sm">
         ৳{row.sell.toFixed(2)}
       </div>
     ),
@@ -57,7 +57,7 @@ export const getColumns = ({
     header: "Description",
     accessor: "description",
     cell: (row) => (
-      <div className="text-sm text-gray-600 dark:text-gray-400 max-w-xs truncate">
+      <div className="text-sm max-w-xs truncate">
         {row.description || "No description"}
       </div>
     ),
@@ -73,11 +73,7 @@ export const getColumns = ({
           onChange={(e) => onStatusToggle(row._id, e.target.checked)}
           aria-label={`Toggle status for ${row.name}`}
         />
-        <span className={`ml-2 text-xs font-medium capitalize ${
-          row.status 
-            ? 'text-green-600 dark:text-green-400' 
-            : 'text-red-600 dark:text-red-400'
-        }`}>
+        <span className="ml-2 text-xs font-medium capitalize">
           {row.status ? "Active" : "Inactive"}
         </span>
       </div>
@@ -87,7 +83,7 @@ export const getColumns = ({
     header: "Created",
     accessor: "createdAt",
     cell: (row) => (
-      <div className="text-sm text-gray-600 dark:text-gray-400">
+      <div className="text-sm">
         {new Date(row.createdAt).toLocaleDateString()}
       </div>
     ),

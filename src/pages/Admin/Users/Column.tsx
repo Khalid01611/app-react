@@ -55,13 +55,13 @@ export const getColumns = ({
           row.roles.map((role) => (
             <span
               key={role._id}
-              className="inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300"
+              className="inline-block bg-blue-100 text-xs font-semibold px-2.5 py-0.5 rounded dark:bg-blue-900"
             >
               {role.name}
             </span>
           ))
         ) : (
-          <span className="text-gray-500 text-sm dark:text-gray-400">No roles</span>
+          <span className="text-sm">No roles</span>
         )}
       </div>
     ),
@@ -78,7 +78,7 @@ export const getColumns = ({
           aria-label={`Toggle verification for ${row.name}`}
         />
         {row.verify_at && (
-          <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">{new Date(row.verify_at).toLocaleDateString()}</span>
+          <span className="ml-2 text-xs">{new Date(row.verify_at).toLocaleDateString()}</span>
         )}
       </div>
     ),

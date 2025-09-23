@@ -40,10 +40,10 @@ export const getColumns = (): Column<Invoice>[] => [
     header: "Invoice No",
     accessor: "invoice_no",
     cell: (row: Invoice) => {
-      if (!row || typeof row !== 'object') return <span className="text-gray-400">N/A</span>;
-      if (!row.invoice_no) return <span className="text-gray-400">N/A</span>;
+      if (!row || typeof row !== 'object') return "N/A";
+      if (!row.invoice_no) return "N/A";
       return (
-        <span className="font-medium text-gray-900">{row.invoice_no}</span>
+        <span className="font-medium">{row.invoice_no}</span>
       );
     },
   },
@@ -51,10 +51,10 @@ export const getColumns = (): Column<Invoice>[] => [
     header: "Date",
     accessor: "date_time",
     cell: (row: Invoice) => {
-      if (!row || typeof row !== 'object') return <span className="text-gray-400">N/A</span>;
-      if (!row.date_time) return <span className="text-gray-400">N/A</span>;
+      if (!row || typeof row !== 'object') return "N/A";
+      if (!row.date_time) return "N/A";
       return (
-        <span className="text-gray-600">
+        <span>
           {new Date(row.date_time).toLocaleDateString()}
         </span>
       );
@@ -64,11 +64,11 @@ export const getColumns = (): Column<Invoice>[] => [
     header: "Customer",
     accessor: "customer_name",
     cell: (row: Invoice) => {
-      if (!row) return <span className="text-gray-400">N/A</span>;
+      if (!row) return "N/A";
       return (
         <div>
-          <div className="font-medium text-gray-900">{row.customer_name || 'N/A'}</div>
-          <div className="text-sm text-gray-500">{row.customer_phone_number || 'N/A'}</div>
+          <div className="font-medium">{row.customer_name || 'N/A'}</div>
+          <div className="text-sm">{row.customer_phone_number || 'N/A'}</div>
         </div>
       );
     },
@@ -77,9 +77,9 @@ export const getColumns = (): Column<Invoice>[] => [
     header: "Product",
     accessor: "product.name",
     cell: (row: Invoice) => {
-      if (!row?.product?.name) return <span className="text-gray-400">N/A</span>;
+      if (!row?.product?.name) return "N/A";
       return (
-        <span className="text-gray-900">{row.product.name}</span>
+        <span>{row.product.name}</span>
       );
     },
   },
@@ -87,11 +87,11 @@ export const getColumns = (): Column<Invoice>[] => [
     header: "Seller",
     accessor: "seller.name",
     cell: (row: Invoice) => {
-      if (!row?.seller?.name) return <span className="text-gray-400">N/A</span>;
+      if (!row?.seller?.name) return "N/A";
       return (
         <div>
-          <div className="font-medium text-gray-900">{row.seller.name}</div>
-          <div className="text-sm text-gray-500">{row.seller.email}</div>
+          <div className="font-medium">{row.seller.name}</div>
+          <div className="text-sm">{row.seller.email}</div>
         </div>
       );
     },
@@ -100,9 +100,9 @@ export const getColumns = (): Column<Invoice>[] => [
     header: "Amount",
     accessor: "total_amount",
     cell: (row: Invoice) => {
-      if (!row?.total_amount) return <span className="text-gray-400">N/A</span>;
+      if (!row?.total_amount) return "N/A";
       return (
-        <span className="font-semibold text-gray-600">
+        <span className="font-semibold">
           ৳{row.total_amount.toFixed(2)}
         </span>
       );
@@ -112,9 +112,9 @@ export const getColumns = (): Column<Invoice>[] => [
     header: "Payment",
     accessor: "payment_method",
     cell: (row: Invoice) => {
-      if (!row?.payment_method) return <span className="text-gray-400">N/A</span>;
+      if (!row?.payment_method) return "N/A";
       return (
-        <span className="capitalize text-gray-700">{row.payment_method}</span>
+        <span className="capitalize">{row.payment_method}</span>
       );
     },
   },
