@@ -86,12 +86,14 @@ const TableFilter: React.FC<TableFilterProps> = ({
             </Select>
           </div>
 
-          <div className="flex items-center gap-2">
-            <Button variant="red" onClick={() => onDelete?.()} className="flex items-center gap-2">
-              <FiTrash2 className="w-4 h-4" />
-              <span>{selectedCount > 0 ? `Delete (${selectedCount})` : "Delete"}</span>
-            </Button>
-          </div>
+          {onDelete && (
+            <div className="flex items-center gap-2">
+              <Button variant="red" onClick={() => onDelete?.()} className="flex items-center gap-2">
+                <FiTrash2 className="w-4 h-4" />
+                <span>{selectedCount > 0 ? `Delete (${selectedCount})` : "Delete"}</span>
+              </Button>
+            </div>
+          )}
         </div>
       </div>
 

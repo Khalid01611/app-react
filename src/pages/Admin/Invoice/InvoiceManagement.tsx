@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { FiPlus, FiDownload, FiFilter } from "react-icons/fi";
 import { useSearchParams } from "react-router";
+import { useSelector } from "react-redux";
 import Table from "../../../components/Table";
 import Button from "../../../components/ui/Button";
 import DeleteDialog from "../../../components/ui/DeleteDialog";
@@ -8,7 +9,8 @@ import Dialog from "../../../components/ui/Dialog";
 import Pagination from "../../../components/ui/Pagination";
 import TableFilter from "../../../components/ui/TableFilter";
 import TableHeader from "../../../components/ui/TableHeader";
-import type { PaginationMeta } from "../../../interface/types";
+import { usePermission } from "../../../hooks/usePermission";
+import type { PaginationMeta, RootState } from "../../../interface/types";
 import AdminLayout from "../../../layouts/Admin/AdminLayout";
 import request from "../../../service/AxiosInstance";
 import { handleApiError } from "../../../utils/Api";
@@ -49,6 +51,8 @@ interface Invoice {
 }
 
 const InvoiceManagement = () => {
+  const { user } = useSelector((state: RootState) => state.auth);
+  const { canCreate, canView, canUpdate, canDelete } = usePermission(user, "invoice");
   const [searchParams, setSearchParams] = useSearchParams();
   const [modals, setModals] = useState({
     createOrEdit: false,
@@ -353,6 +357,15 @@ const InvoiceManagement = () => {
   };
 
   const handleCreateOrEditSubmit = async (values: Record<string, any>) => {
+    if (selectedInvoice && !canUpdate) {
+      toastError("You don't have permission to update invoices");
+      return;
+    }
+    if (!selectedInvoice && !canCreate) {
+      toastError("You don't have permission to create invoices");
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       // Validate invoice data before submission
@@ -429,6 +442,11 @@ const InvoiceManagement = () => {
   };
 
   const handleDelete = async () => {
+    if (!canDelete) {
+      toastError("You don't have permission to delete invoices");
+      return;
+    }
+
     const idsToDelete = selectedRows.length > 0 ? selectedRows : selectedInvoice ? [selectedInvoice._id] : [];
 
     if (idsToDelete.length === 0) {
@@ -982,18 +1000,24 @@ const InvoiceManagement = () => {
           subtitle="Manage invoices and their details"
           actions={
             <div className="flex space-x-2">
-              <Button variant="light" onClick={() => openModal("filter")}>
-                <FiFilter className="mr-2" />
-                Filter
-              </Button>
-              <Button variant="light" onClick={handleExport}>
-                <FiDownload className="mr-2" />
-                Export
-              </Button>
-              <Button onClick={() => openModal("createOrEdit")}>
-                <FiPlus className="mr-2" />
-                Add Invoice
-              </Button>
+              {canView && (
+                <Button variant="light" onClick={() => openModal("filter")}>
+                  <FiFilter className="mr-2" />
+                  Filter
+                </Button>
+              )}
+              {canView && (
+                <Button variant="light" onClick={handleExport}>
+                  <FiDownload className="mr-2" />
+                  Export
+                </Button>
+              )}
+              {canCreate && (
+                <Button onClick={() => openModal("createOrEdit")}>
+                  <FiPlus className="mr-2" />
+                  Add Invoice
+                </Button>
+              )}
             </div>
           }
         />
@@ -1005,7 +1029,7 @@ const InvoiceManagement = () => {
           onSortChange={handleSortChange}
           perPage={perPage}
           onPerPageChange={handlePerPageChange}
-          onDelete={selectedRows.length > 0 ? handleBulkDelete : undefined}
+          onDelete={selectedRows.length > 0 && canDelete ? handleBulkDelete : undefined}
           selectedCount={selectedRows.length}
         />
 

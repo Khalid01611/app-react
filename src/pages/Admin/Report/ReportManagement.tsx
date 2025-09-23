@@ -583,6 +583,8 @@ const ReportManagement = () => {
             columns={getColumns()}
             data={tableData || []}
             isLoading={isLoading}
+            selectedRows={[]}
+            setSelectedRows={() => {}}
           />
           {meta && <Pagination meta={meta} onPageChange={handlePageChange} />}
         </div>
