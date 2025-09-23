@@ -100,10 +100,10 @@ const AppRoutes = () => {
         <Route path="invoices" element={<PermissionMiddleware permission="view-invoice"><InvoiceManagement /></PermissionMiddleware>} />
         <Route path="reports" element={<PermissionMiddleware permission="view-invoice"><ReportManagement /></PermissionMiddleware>} />
 
-        <Route path="settings" element={<Settings />} />
-        <Route path="sms-settings" element={<SMSSetting />} />
-        <Route path="invoice-settings" element={<InvoiceSettings />} />
-        <Route path="site-settings" element={<SiteSettings />} />
+        <Route path="settings" element={<PermissionMiddleware permission="view-settings"><Settings /></PermissionMiddleware>} />
+        <Route path="sms-settings" element={<PermissionMiddleware permission="view-settings"><SMSSetting /></PermissionMiddleware>} />
+        <Route path="invoice-settings" element={<PermissionMiddleware permission="view-settings"><InvoiceSettings /></PermissionMiddleware>} />
+        <Route path="site-settings" element={<PermissionMiddleware permission="view-settings"><SiteSettings /></PermissionMiddleware>} />
 
         <Route path="account-settings" element={<ProfileInformation />} />
         <Route path="email-settings" element={<AccountEmailSettings />} />

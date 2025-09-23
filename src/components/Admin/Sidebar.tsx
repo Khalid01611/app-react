@@ -108,7 +108,7 @@ const Sidebar = ({
       label: "Settings",
       to: "/settings",
       icon: FaCog,
-      // permission: "view-report",
+      permission: "view-settings",
     },
   ];
 
