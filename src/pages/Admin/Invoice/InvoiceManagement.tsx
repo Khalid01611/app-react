@@ -404,7 +404,7 @@ const InvoiceManagement = () => {
       const calculatedTotal = calculateTotal(values.price, values.quantity, values.discount);
 
       const invoiceData = {
-        invoice_no: values.invoice_no,
+        ...(selectedInvoice && { invoice_no: values.invoice_no }),
         date_time: parsedDate,
         vehicle_no: values.vehicle_no || null,
         customer_name: values.customer_name,
@@ -559,21 +559,22 @@ const InvoiceManagement = () => {
 
           handleCreateOrEditSubmit(completeValues);
         }} className="space-y-6">
-          {/* Invoice Number */}
-          <div className="space-y-2">
-            <label htmlFor="invoice_no" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Invoice Number <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              id="invoice_no"
-              name="invoice_no"
-              defaultValue={selectedInvoice?.invoice_no || generateInvoiceNumber()}
-              placeholder="Enter invoice number"
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-            />
-          </div>
+          {/* Invoice Number - Auto-generated for new invoices */}
+          {selectedInvoice && (
+            <div className="space-y-2">
+              <label htmlFor="invoice_no" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Invoice Number
+              </label>
+              <input
+                type="text"
+                id="invoice_no"
+                name="invoice_no"
+                defaultValue={selectedInvoice.invoice_no}
+                readOnly
+                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 dark:bg-gray-600 dark:border-gray-600 dark:text-white cursor-not-allowed"
+              />
+            </div>
+          )}
 
           {/* Date & Time */}
           <div className="space-y-2">
