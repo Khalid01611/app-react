@@ -35,6 +35,7 @@ import Settings from "./pages/Admin/Settings/Settings";
 import SMSSetting from "./pages/Admin/Settings/SMSSetting";
 import InvoiceSettings from "./pages/Admin/Settings/InvoiceSettings";
 import SiteSettings from "./pages/Admin/Settings/SiteSettings";
+import PermissionMiddleware from "./middlewares/PermissionMiddleware";
 
 const App = () => {
   return (
@@ -90,14 +91,14 @@ const AppRoutes = () => {
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="/messenger" element={<MessengerPage />} />
         {/* User  management*/}
-        <Route path="roles" element={<RoleManagement />} />
-        <Route path="permissions" element={<PermissionManagement />} />
-        <Route path="users" element={<UserManagement />} />
+        <Route path="roles" element={<PermissionMiddleware permission="view-role"><RoleManagement /></PermissionMiddleware>} />
+        <Route path="permissions" element={<PermissionMiddleware permission="view-permission"><PermissionManagement /></PermissionMiddleware>} />
+        <Route path="users" element={<PermissionMiddleware permission="view-user"><UserManagement /></PermissionMiddleware>} />
 
         {/* Product & Invoice management */}
-        <Route path="products" element={<ProductManagement />} />
-        <Route path="invoices" element={<InvoiceManagement />} />
-        <Route path="reports" element={<ReportManagement />} />
+        <Route path="products" element={<PermissionMiddleware permission="view-product"><ProductManagement /></PermissionMiddleware>} />
+        <Route path="invoices" element={<PermissionMiddleware permission="view-invoice"><InvoiceManagement /></PermissionMiddleware>} />
+        <Route path="reports" element={<PermissionMiddleware permission="view-invoice"><ReportManagement /></PermissionMiddleware>} />
 
         <Route path="settings" element={<Settings />} />
         <Route path="sms-settings" element={<SMSSetting />} />
