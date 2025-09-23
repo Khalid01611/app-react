@@ -12,6 +12,7 @@ import { FiHome, FiMessageCircle, FiPieChart } from "react-icons/fi";
 import type { IconType } from "react-icons/lib";
 import { useSelector } from "react-redux";
 import { useSocket } from "../../context/SocketContext";
+import { hasPermission } from "../../utils/authorization";
 import type { RootState } from "../../interface/types";
 import NavItem from "./NavItem";
 import SubMenu from "./SubMenu";
@@ -43,11 +44,9 @@ const Sidebar = ({
 }) => {
   const { user } = useSelector((state: RootState) => state.auth);
   const { unreadCount } = useSocket();
-
-  const hasPermission = (permissionName?: string) => {
-    if (!permissionName) return true;
-    if (!user) return false;
-    return user.permissions.some((perm: any) => perm.name === permissionName);
+  const checkPermission = (permission?: string) => {
+    if (!permission) return true;
+    return hasPermission(user, "")[permission] || false;
   };
 
   const menuItems: MenuItem[] = [
@@ -67,19 +66,19 @@ const Sidebar = ({
       label: "Invoice Management",
       to: "/invoices",
       icon: FaFileInvoice,
-      // permission: "view-invoice",
+      permission: "view-invoice",
     },
     {
       label: "Product Management",
       to: "/products",
       icon: FaBox,
-      // permission: "view-product",
+      permission: "view-product",
     },
     {
       label: "Report Management",
       to: "/reports",
       icon: FiPieChart,
-      // permission: "view-report",
+      permission: "view-invoice",
     },
     {
       label: "User Management",
@@ -113,9 +112,13 @@ const Sidebar = ({
     },
   ];
 
-  const filteredMenuItems = menuItems.filter((item) =>
-    hasPermission(item.permission)
-  );
+  const filteredMenuItems = menuItems.filter((item) => {
+    if ("children" in item && item.label === "User Management") {
+      // Show User Management if user has any of the child permissions
+      return item.children.some(child => checkPermission(child.permission));
+    }
+    return checkPermission(item.permission);
+  });
 
   return (
     <>
@@ -145,7 +148,7 @@ const Sidebar = ({
                 if ("children" in item) {
                   return (
                     <SubMenu key={index} title={item.label} icon={item.icon}>
-                      {item.children.map((child, childIndex) => (
+                      {item.children.filter(child => checkPermission(child.permission)).map((child, childIndex) => (
                         <NavItem
                           key={childIndex}
                           to={child.to}
