@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { FiPlus } from "react-icons/fi";
 import { useSearchParams } from "react-router";
+import { useSelector } from "react-redux";
 import Table from "../../../components/Table";
 import Button from "../../../components/ui/Button";
 import Checkbox from "../../../components/ui/Checkbox";
@@ -12,7 +13,8 @@ import Pagination from "../../../components/ui/Pagination";
 import SubmitButton from "../../../components/ui/SubmitButton";
 import TableFilter from "../../../components/ui/TableFilter";
 import TableHeader from "../../../components/ui/TableHeader";
-import type { PaginationMeta } from "../../../interface/types";
+import { usePermission } from "../../../hooks/usePermission";
+import type { PaginationMeta, RootState } from "../../../interface/types";
 import AdminLayout from "../../../layouts/Admin/AdminLayout";
 import request from "../../../service/AxiosInstance";
 import { handleApiError } from "../../../utils/Api";
@@ -34,6 +36,8 @@ interface Role {
 }
 
 const RoleManagement = () => {
+  const { user } = useSelector((state: RootState) => state.auth);
+  const { canCreate, canView, canUpdate, canDelete } = usePermission(user, "role");
   const [searchParams, setSearchParams] = useSearchParams();
   const [modals, setModals] = useState({
     createOrEdit: false,
@@ -136,6 +140,15 @@ const RoleManagement = () => {
     e.preventDefault();
     if (!validate()) return;
 
+    if (selectedRole && !canUpdate) {
+      toastError("You don't have permission to update roles");
+      return;
+    }
+    if (!selectedRole && !canCreate) {
+      toastError("You don't have permission to create roles");
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       if (selectedRole) {
@@ -161,6 +174,11 @@ const RoleManagement = () => {
   };
 
   const handleDelete = async () => {
+    if (!canDelete) {
+      toastError("You don't have permission to delete roles");
+      return;
+    }
+
     const idsToDelete = selectedRows.length > 0 ? selectedRows : selectedRole ? [selectedRole._id] : [];
     if (idsToDelete.length === 0) {
       toastError("No role selected for deletion.");
@@ -255,10 +273,12 @@ const RoleManagement = () => {
           title="Role Management"
           subtitle="Manage roles and assign permissions"
           actions={
-            <Button onClick={() => openModal("createOrEdit")}>
-              <FiPlus className="mr-2" />
-              Add Role
-            </Button>
+            canCreate && (
+              <Button onClick={() => openModal("createOrEdit")}>
+                <FiPlus className="mr-2" />
+                Add Role
+              </Button>
+            )
           }
         />
 
@@ -269,7 +289,7 @@ const RoleManagement = () => {
           onSortChange={handleSortChange}
           perPage={perPage}
           onPerPageChange={handlePerPageChange}
-          onDelete={selectedRows.length > 0 ? handleBulkDelete : undefined}
+          onDelete={selectedRows.length > 0 && canDelete ? handleBulkDelete : undefined}
           selectedCount={selectedRows.length}
         />
 

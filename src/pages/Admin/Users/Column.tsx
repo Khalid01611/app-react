@@ -1,8 +1,10 @@
 import { SquarePen } from "lucide-react";
 import { FiTrash2 } from "react-icons/fi";
+import { useSelector } from "react-redux";
 import Button from "../../../components/ui/Button";
 import Toggle from "../../../components/ui/Toggle";
-import type { Column } from "../../../interface/types";
+import { usePermission } from "../../../hooks/usePermission";
+import type { Column, RootState } from "../../../interface/types";
 
 interface Role {
   _id: string;
@@ -30,7 +32,11 @@ export const getColumns = ({
   onDelete: (row: User) => void;
   onVerifyToggle: (userId: string, verified: boolean) => void;
   onStatusToggle: (userId: string, status: boolean) => void;
-}): Column<User>[] => [
+}): Column<User>[] => {
+  const { user } = useSelector((state: RootState) => state.auth);
+  const { canUpdate, canDelete } = usePermission(user, "user");
+
+  return [
   {
     header: "Name",
     accessor: "name",
@@ -93,13 +99,18 @@ export const getColumns = ({
     header: "",
     cell: (row) => (
       <div className="flex justify-end space-x-2">
-        <Button variant="edit" onClick={() => onEdit(row)} aria-label="Edit">
-          <SquarePen size={15} />
-        </Button>
-        <Button variant="delete" onClick={() => onDelete(row)} aria-label="Delete">
-          <FiTrash2 size={14} />
-        </Button>
+        {canUpdate && (
+          <Button variant="edit" onClick={() => onEdit(row)} aria-label="Edit">
+            <SquarePen size={15} />
+          </Button>
+        )}
+        {canDelete && (
+          <Button variant="delete" onClick={() => onDelete(row)} aria-label="Delete">
+            <FiTrash2 size={14} />
+          </Button>
+        )}
       </div>
     ),
   },
 ];
+};

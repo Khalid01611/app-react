@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { FiPlus } from "react-icons/fi";
 import { useSearchParams } from "react-router";
+import { useSelector } from "react-redux";
 import Table from "../../../components/Table";
 import Button from "../../../components/ui/Button";
 import DeleteDialog from "../../../components/ui/DeleteDialog";
@@ -9,7 +10,8 @@ import Form from "../../../components/ui/Form";
 import Pagination from "../../../components/ui/Pagination";
 import TableFilter from "../../../components/ui/TableFilter";
 import TableHeader from "../../../components/ui/TableHeader";
-import type { PaginationMeta } from "../../../interface/types";
+import { usePermission } from "../../../hooks/usePermission";
+import type { PaginationMeta, RootState } from "../../../interface/types";
 import AdminLayout from "../../../layouts/Admin/AdminLayout";
 import request from "../../../service/AxiosInstance";
 import { handleApiError } from "../../../utils/Api";
@@ -26,6 +28,8 @@ interface Permission {
 }
 
 const PermissionManagement = () => {
+  const { user } = useSelector((state: RootState) => state.auth);
+  const { canCreate, canView, canUpdate, canDelete } = usePermission(user, "permission");
   const [searchParams, setSearchParams] = useSearchParams();
   const [modals, setModals] = useState({
     createOrEdit: false,
@@ -92,6 +96,15 @@ const PermissionManagement = () => {
   };
 
   const handleCreateOrEditSubmit = async (values: Record<string, any>) => {
+    if (selectedPermission && !canUpdate) {
+      toastError("You don't have permission to update permissions");
+      return;
+    }
+    if (!selectedPermission && !canCreate) {
+      toastError("You don't have permission to create permissions");
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       if (selectedPermission) {
@@ -113,6 +126,11 @@ const PermissionManagement = () => {
   };
 
   const handleDelete = async () => {
+    if (!canDelete) {
+      toastError("You don't have permission to delete permissions");
+      return;
+    }
+
     const idsToDelete = selectedRows.length > 0 ? selectedRows : selectedPermission ? [selectedPermission._id] : [];
 
     if (idsToDelete.length === 0) {
@@ -221,10 +239,12 @@ const PermissionManagement = () => {
           title="Permission Management"
           subtitle="Manage permissions and their access levels"
           actions={
-            <Button onClick={() => openModal("createOrEdit")}>
-              <FiPlus className="mr-2" />
-              Add Permission
-            </Button>
+            canCreate && (
+              <Button onClick={() => openModal("createOrEdit")}>
+                <FiPlus className="mr-2" />
+                Add Permission
+              </Button>
+            )
           }
         />
 
@@ -235,7 +255,7 @@ const PermissionManagement = () => {
           onSortChange={handleSortChange}
           perPage={perPage}
           onPerPageChange={handlePerPageChange}
-          onDelete={selectedRows.length > 0 ? handleBulkDelete : undefined}
+          onDelete={selectedRows.length > 0 && canDelete ? handleBulkDelete : undefined}
           selectedCount={selectedRows.length}
         />
 

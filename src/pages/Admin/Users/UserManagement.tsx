@@ -18,6 +18,9 @@ import request from "../../../service/AxiosInstance";
 import { handleApiError } from "../../../utils/Api";
 import { toastError, toastSuccess } from "../../../utils/Toast";
 import { getColumns } from "./Column";
+import type { RootState } from "../../../app/Store";
+import { useSelector } from "react-redux";
+import { usePermission } from "../../../hooks/usePermission";
 
 interface Role {
   _id: string;
@@ -65,7 +68,8 @@ const UserManagement = () => {
   const perPage = parseInt(searchParams.get("perPage") || "10");
   const sort = searchParams.get("sort") || "";
   const [searchInput, setSearchInput] = useState("");
-
+  const { user } = useSelector((state: RootState) => state.auth);
+  const { canCreate, canView, canUpdate, canDelete } = usePermission(user, "user");
   const fetchData = async () => {
     setIsLoading(true);
     try {
@@ -159,6 +163,15 @@ const UserManagement = () => {
     e.preventDefault();
     if (!validate()) return;
 
+    if (selectedUser && !canUpdate) {
+      toastError("You don't have permission to update users");
+      return;
+    }
+    if (!selectedUser && !canCreate) {
+      toastError("You don't have permission to create users");
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const payload = {
@@ -187,6 +200,11 @@ const UserManagement = () => {
   };
 
   const handleDelete = async () => {
+    if (!canDelete) {
+      toastError("You don't have permission to delete users");
+      return;
+    }
+
     const idsToDelete = selectedRows.length > 0 ? selectedRows : selectedUser ? [selectedUser._id] : [];
     if (idsToDelete.length === 0) {
       toastError("No user selected for deletion.");
@@ -329,8 +347,8 @@ const UserManagement = () => {
           selectedRows.length > 0
             ? `You are about to delete ${selectedRows.length} user(s). This action is irreversible.`
             : selectedUser
-            ? `You are about to delete the user "${selectedUser.name}". This action is irreversible.`
-            : ""
+              ? `You are about to delete the user "${selectedUser.name}". This action is irreversible.`
+              : ""
         }
         visible={modals.delete}
         onHide={() => closeModal("delete")}
@@ -342,10 +360,12 @@ const UserManagement = () => {
           title="User Management"
           subtitle="Manage system users and their permissions"
           actions={
-            <Button onClick={() => openModal("createOrEdit")}>
-              <FiPlus className="mr-2" />
-              Add User
-            </Button>
+            canCreate && (
+              <Button onClick={() => openModal("createOrEdit")}>
+                <FiPlus className="mr-2" />
+                Add User
+              </Button>
+            )
           }
         />
 
@@ -356,7 +376,7 @@ const UserManagement = () => {
           onSortChange={handleSortChange}
           perPage={perPage}
           onPerPageChange={handlePerPageChange}
-          onDelete={selectedRows.length > 0 ? handleBulkDelete : undefined}
+          onDelete={selectedRows.length > 0 && canDelete ? handleBulkDelete : undefined}
           selectedCount={selectedRows.length}
         />
 

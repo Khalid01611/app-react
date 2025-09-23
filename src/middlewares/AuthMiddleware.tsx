@@ -10,7 +10,7 @@ const AuthMiddleware = () => {
     return <Loading />;
   }
   if (!user) {
-    return <Navigate to="/unauthorized" replace />;
+    return <Navigate to="/login" replace />;
   }
   if (user.verifyAt === null) {
     return <Navigate to="/email-verification" replace />;
