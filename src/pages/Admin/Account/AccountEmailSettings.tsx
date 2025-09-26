@@ -93,7 +93,6 @@ const AccountEmailSettings = () => {
       
       if (response.data.status) {
         toastSuccess('Email updated successfully! Please verify your new email address.');
-        console.log('Email updated successfully:', response.data.user);
         
         // Update current email and reset form
         setCurrentEmail(formData.newEmail.trim());

@@ -40,7 +40,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
   const handleSaveProfile = () => {
     setIsEditing(false);
-    console.log("Updated profile:", user);
+    // Profile updated successfully
   };
 
   return (

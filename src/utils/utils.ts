@@ -52,7 +52,6 @@ export function markdownToSnippet(markdown: string | undefined | null, length: n
 
     return plain;
   } catch (error) {
-    console.error("Error processing markdown snippet:", error);
     return markdown.length > length ? markdown.slice(0, length).trim() + "…" : markdown.trim();
   }
 }

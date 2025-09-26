@@ -231,10 +231,7 @@ const InvoiceManagement = () => {
     }
   }, [formValues.price, selectedProductId, products]);
 
-  // Debug: Log formValues changes
-  useEffect(() => {
-    console.log('formValues changed:', formValues);
-  }, [formValues]);
+
 
   // Watch for product selection and update formValues for Form component
   useEffect(() => {

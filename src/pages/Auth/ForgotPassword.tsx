@@ -33,7 +33,6 @@ const ForgotPassword = () => {
         setIsSubmitted(true);
       }
     } catch (error: unknown) {
-      console.log(error);
       if (error instanceof AxiosError) {
         if (error.response?.status === 400 || error.response?.status === 404) {
           toastError(error.response.data.message);

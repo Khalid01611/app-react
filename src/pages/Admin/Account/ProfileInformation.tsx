@@ -39,7 +39,6 @@ const ProfileInformation = () => {
         const response = await request.get('/api/me/profile');
         if (response.data.status && response.data.user) {
           const user = response.data.user;
-          console.log('Loaded user profile:', user);
           
           setFormData({
             name: user.name || "",
@@ -51,7 +50,6 @@ const ProfileInformation = () => {
           });
 
           if (user.profile_picture) {
-            console.log('Setting profile image from API:', user.profile_picture);
             setProfileImage(user.profile_picture);
           }
         }
@@ -66,7 +64,6 @@ const ProfileInformation = () => {
 
     // Check if we have user data in Redux store first
     if (user?.profile_picture) {
-      console.log('Setting profile image from Redux:', user.profile_picture);
       setProfileImage(user.profile_picture);
     }
 
@@ -153,11 +150,9 @@ const ProfileInformation = () => {
 
       if (response.data.status) {
         toastSuccess('Profile picture updated successfully!');
-        console.log('Upload response:', response.data);
         
         // Update the profile image with the new URL from server
         if (response.data.user?.profile_picture) {
-          console.log('New profile picture URL:', response.data.user.profile_picture);
           setProfileImage(response.data.user.profile_picture);
           // Update Redux store with new user data including profile picture
           dispatch(setUser(response.data.user));
@@ -201,7 +196,6 @@ const ProfileInformation = () => {
 
       if (response.data.status) {
         toastSuccess('Profile updated successfully!');
-        console.log('Profile updated successfully:', response.data.user);
       }
     } catch (error: any) {
       console.error('Error updating profile:', error);

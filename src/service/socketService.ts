@@ -83,17 +83,14 @@ class SocketService {
         });
 
         this.socket.on("connect", () => {
-          console.log("Connected to socket server");
           this.reconnectAttempts = 0; // Reset reconnect attempts on successful connection
           resolve(this.socket!);
         });
 
         this.socket.on("connect_error", (error: any) => {
-          console.error("Socket connection error:", error);
           
           // Handle authentication errors specifically
           if (error.message === "Authentication error" || error.data?.message === "Authentication error") {
-            console.log("Authentication failed, will retry after token refresh");
             // Don't reject immediately for auth errors, let the app handle token refresh
             setTimeout(() => {
               this.attemptReconnect(resolve, reject);
@@ -105,7 +102,6 @@ class SocketService {
         });
 
         this.socket.on("disconnect", (reason: string) => {
-          console.log("Socket disconnected:", reason);
           if (reason === "io server disconnect") {
             // Server disconnected, try to reconnect
             this.attemptReconnect(resolve, reject);
@@ -126,7 +122,6 @@ class SocketService {
     }
 
     this.reconnectAttempts++;
-    console.log(`Attempting to reconnect (${this.reconnectAttempts}/${this.maxReconnectAttempts})...`);
 
     setTimeout(() => {
       if (this.user) {
@@ -143,7 +138,7 @@ class SocketService {
     if (!this.socket) return;
 
     this.socket.on(SOCKET_EVENTS.ERROR, (data: any) => {
-      console.error("Socket error:", data);
+      // Socket error occurred
     });
   }
 

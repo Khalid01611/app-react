@@ -21,7 +21,6 @@ type User = {
 
 export const hasRole = (user: User | null | undefined): string[] => {
   if (!user || !Array.isArray(user.roles)) {
-    console.warn(`hasRole: invalid user or roles`, user);
     return [];
   }
 
@@ -32,7 +31,6 @@ export const hasPermission = (user: User | null | undefined, resource: string): 
   const resourcePermissions: Record<string, boolean> = {};
 
   if (!user || !Array.isArray(user.permissions)) {
-    console.warn(`hasPermission: invalid user or permissions`, user);
     return resourcePermissions;
   }
 

@@ -112,7 +112,6 @@ const AccountPasswordSettings = () => {
       
       if (response.data.status) {
         toastSuccess('Password updated successfully!');
-        console.log('Password updated successfully');
         
         // Reset form
         setFormData({ currentPassword: "", newPassword: "", confirmPassword: "" });

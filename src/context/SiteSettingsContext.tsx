@@ -52,7 +52,7 @@ export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {
         address: res.data.address || ""
       })
     } catch (error) {
-      console.error("Failed to fetch site settings:", error)
+      // Failed to fetch site settings - using defaults
     } finally {
       setLoading(false)
     }

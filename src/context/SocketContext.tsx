@@ -96,7 +96,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       const totalUnread = calculateUnreadCount(socketConversations);
       setUnreadCount(totalUnread);
     } catch (error) {
-      console.error("Error loading conversations:", error);
+      // Error loading conversations - using empty state
     }
   };
 
@@ -127,8 +127,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
             setupSocketListeners();
           })
           .catch((error) => {
-            console.error("Failed to connect to socket:", error);
-            // Don't set isConnected to false here, let it retry
+            // Failed to connect to socket - will retry
           });
       }, 1000); // Wait 1 second for authentication to complete
 
@@ -170,7 +169,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 
     // Message delivered confirmation
     socketService.on(SOCKET_EVENTS.MESSAGE_DELIVERED, (data) => {
-      console.log("Message delivered:", data);
+      // Message delivered - no action needed
     });
 
     // Message read status
@@ -194,7 +193,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 
     // Listen for unread count updates from backend
     socketService.on("unread_counts_updated", (data: any) => {
-      console.log("Unread counts updated:", data);
       // Reload conversations to get updated unread counts
       loadConversations();
     });

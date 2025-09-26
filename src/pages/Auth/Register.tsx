@@ -68,7 +68,6 @@ const Register = () => {
         navigate("/");
       }
     } catch (error: unknown) {
-      console.log(error);
       if (error instanceof AxiosError) {
         if (error.response?.status === 401 || error.response?.status === 400) {
           toastError(error.response.data.message);
