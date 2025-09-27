@@ -72,7 +72,7 @@ const MessengerPage: React.FC = () => {
       // Mark all conversations as read when visiting the messenger page
       conversations.forEach(conversation => {
         const uid = user?.id || (user as any)?._id;
-        if (conversation.unreadCount?.[uid] > 0) {
+        if (conversation.unreadCount && conversation.unreadCount[uid] > 0) {
           try {
             chatSocketService.markConversationAsRead(conversation._id);
           } catch (error) {

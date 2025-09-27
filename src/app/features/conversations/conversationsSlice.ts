@@ -46,18 +46,19 @@ const conversationsSlice = createSlice({
         state.conversations.unshift(conversation);
       }
     },
-    incrementUnreadCount: (state, action: PayloadAction<string>) => {
-      const conversationId = action.payload;
+    incrementUnreadCount: (state, action: PayloadAction<{ conversationId: string; userId: string }>) => {
+      const { conversationId, userId } = action.payload;
       const conversationIndex = state.conversations.findIndex((conv) => conv.id === conversationId);
       if (conversationIndex !== -1) {
-        state.conversations[conversationIndex].unreadCount += 1;
+        const current = state.conversations[conversationIndex].unreadCount[userId] || 0;
+        state.conversations[conversationIndex].unreadCount[userId] = current + 1;
       }
     },
-    clearUnreadCount: (state, action: PayloadAction<string>) => {
-      const conversationId = action.payload;
+    clearUnreadCount: (state, action: PayloadAction<{ conversationId: string; userId: string }>) => {
+      const { conversationId, userId } = action.payload;
       const conversationIndex = state.conversations.findIndex((conv) => conv.id === conversationId);
       if (conversationIndex !== -1) {
-        state.conversations[conversationIndex].unreadCount = 0;
+        state.conversations[conversationIndex].unreadCount[userId] = 0;
       }
     },
     addConversation: (state, action: PayloadAction<ConversationData>) => {

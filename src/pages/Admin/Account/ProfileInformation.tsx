@@ -10,7 +10,7 @@ import Textarea from "../../../components/ui/Textarea";
 import request from "../../../service/AxiosInstance";
 import { toastSuccess, toastError } from "../../../utils/Toast";
 import { setUser } from "../../../app/features/auth/authSlice";
-import { getProfileImageUrl, handleProfileImageError } from "../../../utils/profileImage";
+import { handleProfileImageError } from "../../../utils/profileImage";
 import type { RootState } from "../../../app/Store";
 
 const ProfileInformation = () => {

@@ -128,8 +128,7 @@ const ReportManagement = () => {
         maxAmount: filters.maxAmount || undefined,
       };
       
-      // Check if token is available
-      const token = localStorage.getItem('rt') || document.cookie.split('; ').find(row => row.startsWith('rt='))?.split('=')[1];
+
       
       const res = await request.get("/api/admin/reports/detailed", { params });
       

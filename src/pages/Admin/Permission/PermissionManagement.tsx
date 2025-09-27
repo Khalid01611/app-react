@@ -29,7 +29,7 @@ interface Permission {
 
 const PermissionManagement = () => {
   const { user } = useSelector((state: RootState) => state.auth);
-  const { canCreate, canView, canUpdate, canDelete } = usePermission(user, "permission");
+  const { canCreate, canUpdate, canDelete } = usePermission(user, "permission");
   const [searchParams, setSearchParams] = useSearchParams();
   const [modals, setModals] = useState({
     createOrEdit: false,

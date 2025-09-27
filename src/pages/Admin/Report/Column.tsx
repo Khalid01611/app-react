@@ -75,7 +75,7 @@ export const getColumns = (): Column<Invoice>[] => [
   },
   {
     header: "Product",
-    accessor: "product.name",
+    accessor: (row: Invoice) => row?.product?.name || "N/A",
     cell: (row: Invoice) => {
       if (!row?.product?.name) return "N/A";
       return (
@@ -85,7 +85,7 @@ export const getColumns = (): Column<Invoice>[] => [
   },
   {
     header: "Seller",
-    accessor: "seller.name",
+    accessor: (row: Invoice) => row?.seller?.name || "N/A",
     cell: (row: Invoice) => {
       if (!row?.seller?.name) return "N/A";
       return (

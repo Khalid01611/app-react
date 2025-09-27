@@ -77,7 +77,7 @@ class SocketService {
             refreshToken: decodedRefreshToken
           },
           transports: ["websocket", "polling"],
-          withCredentials: true,
+
           timeout: 10000,
           forceNew: true,
         });
@@ -137,7 +137,7 @@ class SocketService {
   private setupEventListeners() {
     if (!this.socket) return;
 
-    this.socket.on(SOCKET_EVENTS.ERROR, (data: any) => {
+    this.socket.on(SOCKET_EVENTS.ERROR, () => {
       // Socket error occurred
     });
   }

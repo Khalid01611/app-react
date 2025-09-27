@@ -67,7 +67,7 @@ const InvoiceManagement = () => {
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
-  const [invoiceSettings, setInvoiceSettings] = useState({ invoiceNumber: "" });
+
   const [filters, setFilters] = useState({
     payment_method: "",
     startDate: "",
@@ -102,14 +102,7 @@ const InvoiceManagement = () => {
     }
   };
 
-  const fetchInvoiceSettings = async () => {
-    try {
-      const res = await request.get("/api/admin/invoice-settings");
-      setInvoiceSettings({ invoiceNumber: res.data.invoiceNumber || "" });
-    } catch (error: any) {
-      console.error("Failed to fetch invoice settings:", error);
-    }
-  };
+
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -155,7 +148,7 @@ const InvoiceManagement = () => {
   useEffect(() => {
     fetchData();
     fetchProducts();
-    fetchInvoiceSettings();
+
   }, [page, perPage, sort, searchInput, filters]);
 
   // Refetch data when modals are closed
@@ -192,14 +185,14 @@ const InvoiceManagement = () => {
   }, [selectedInvoice]);
 
   // Auto-calculation state
-  const [autoCalculate, setAutoCalculate] = useState(true);
+  const [autoCalculate] = useState(true);
   const [formValues, setFormValues] = useState({
     price: "",
     quantity: "",
     discount: "",
     total_amount: "",
   });
-  const [selectedProductForCalc, setSelectedProductForCalc] = useState<Product | null>(null);
+
   const [selectedProductId, setSelectedProductId] = useState<string>("");
 
   // Watch for product selection changes and auto-fill price
@@ -207,7 +200,7 @@ const InvoiceManagement = () => {
     if (selectedProductId && autoCalculate) {
       const product = products.find(p => p._id === selectedProductId);
       if (product) {
-        setSelectedProductForCalc(product);
+
         const newFormValues = {
           price: product.sell.toString(),
           quantity: formValues.quantity || "1",
@@ -226,7 +219,7 @@ const InvoiceManagement = () => {
       const matchingProduct = products.find(p => p.sell.toString() === formValues.price);
       if (matchingProduct) {
         setSelectedProductId(matchingProduct._id);
-        setSelectedProductForCalc(matchingProduct);
+
       }
     }
   }, [formValues.price, selectedProductId, products]);
@@ -256,7 +249,7 @@ const InvoiceManagement = () => {
     if (productId && autoCalculate) {
       const product = products.find(p => p._id === productId);
       if (product) {
-        setSelectedProductForCalc(product);
+
         const newFormValues = {
           price: product.sell.toString(),
           quantity: formValues.quantity || "1",
@@ -293,7 +286,7 @@ const InvoiceManagement = () => {
     setModals((prev) => ({ ...prev, [modalType]: false }));
     if (modalType === "createOrEdit" || modalType === "view" || modalType === "delete") {
       setSelectedInvoice(null);
-      setSelectedProductForCalc(null);
+
       setSelectedProductId("");
       setFormValues({
         price: "",
@@ -304,14 +297,7 @@ const InvoiceManagement = () => {
     }
   };
 
-  const generateInvoiceNumber = () => {
-    if (invoiceSettings.invoiceNumber) {
-      return invoiceSettings.invoiceNumber;
-    }
-    const timestamp = Date.now();
-    const random = Math.floor(Math.random() * 1000);
-    return `INV-${timestamp}-${random}`;
-  };
+
 
   // Auto-calculation functions
   const calculateTotal = (price: string, quantity: string, discount: string) => {

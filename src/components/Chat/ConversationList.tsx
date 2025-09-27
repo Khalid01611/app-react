@@ -23,8 +23,7 @@ interface MoreOptionsMenuProps {
   onToggle: (id: string) => void;
 }
 
-const MoreOptionsMenu: React.FC<MoreOptionsMenuProps> = ({ conversation, isMuted, onDelete, currentUserId, isActive, onToggle }) => {
-  const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 });
+const MoreOptionsMenu: React.FC<MoreOptionsMenuProps> = ({ conversation, isMuted, onDelete, isActive, onToggle }) => {
 
   const handleMute = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -95,7 +94,7 @@ const ConversationList: React.FC<ConversationListProps> = ({
   currentConversation,
   onConversationSelect,
   onConversationDelete,
-  onConversationMute,
+
   loading,
   currentUserId,
   query = "",

@@ -69,7 +69,7 @@ const UserManagement = () => {
   const sort = searchParams.get("sort") || "";
   const [searchInput, setSearchInput] = useState("");
   const { user } = useSelector((state: RootState) => state.auth);
-  const { canCreate, canView, canUpdate, canDelete } = usePermission(user, "user");
+  const { canCreate, canUpdate, canDelete } = usePermission(user, "user");
   const fetchData = async () => {
     setIsLoading(true);
     try {

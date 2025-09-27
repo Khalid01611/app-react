@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { SOCKET_EVENTS, socketService, type ConversationData, type MessageData, type SocketUser } from "../service/socketService";
-import { ChatService, type IConversation } from "../service/chatService";
+import { ChatService } from "../service/chatService";
 
 interface SocketContextType {
   isConnected: boolean;
@@ -126,7 +126,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
             setIsConnected(true);
             setupSocketListeners();
           })
-          .catch((error) => {
+          .catch(() => {
             // Failed to connect to socket - will retry
           });
       }, 1000); // Wait 1 second for authentication to complete
@@ -154,7 +154,9 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         prev.map((conv) => {
           if (conv.id === message.conversationId) {
             const isCurrentUser = message.sender.id === (user?.id || user?._id);
-            const newUnreadCount = isCurrentUser ? conv.unreadCount : (conv.unreadCount || 0) + 1;
+            const userId = user?.id || user?._id;
+            const currentUserUnread = conv.unreadCount?.[userId] || 0;
+            const newUnreadCount = isCurrentUser ? conv.unreadCount : { ...conv.unreadCount, [userId]: currentUserUnread + 1 };
             
             return { 
               ...conv, 
@@ -168,7 +170,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     });
 
     // Message delivered confirmation
-    socketService.on(SOCKET_EVENTS.MESSAGE_DELIVERED, (data) => {
+    socketService.on(SOCKET_EVENTS.MESSAGE_DELIVERED, () => {
       // Message delivered - no action needed
     });
 
@@ -183,7 +185,9 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         setConversations((prev) =>
           prev.map((conv) => {
             if (conv.id === data.conversationId) {
-              return { ...conv, unreadCount: Math.max(0, (conv.unreadCount || 0) - 1) };
+              const userId = user?.id || user?._id;
+              const currentUnread = conv.unreadCount?.[userId] || 0;
+              return { ...conv, unreadCount: { ...conv.unreadCount, [userId]: Math.max(0, currentUnread - 1) } };
             }
             return conv;
           })
@@ -192,7 +196,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     });
 
     // Listen for unread count updates from backend
-    socketService.on("unread_counts_updated", (data: any) => {
+    socketService.on("unread_counts_updated", () => {
       // Reload conversations to get updated unread counts
       loadConversations();
     });

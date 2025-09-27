@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { X, Search, User, Users, MessageCircle, Plus, Loader2, Check } from "lucide-react";
 import type { IUser } from "../../service/chatService";
 import { useDispatch } from "react-redux";

@@ -24,7 +24,7 @@ const ConfirmPassword = () => {
       } catch (error) {
         if (error instanceof AxiosError) {
           if (error.response?.status === 404) {
-            toastError(error.response.data.message, 5000);
+            toastError(error.response.data.message);
             navigate("/forgot-password");
           } else {
             toastError("Something went wrong! Please try again.");
@@ -68,7 +68,7 @@ const ConfirmPassword = () => {
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         if (error.response?.status === 400) {
-          toastError(error.response.data.message, 5000);
+          toastError(error.response.data.message);
           navigate("/forgot-password", { replace: true });
         } else {
           toastError("Something went wrong! Please try again.");

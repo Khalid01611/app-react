@@ -37,7 +37,7 @@ interface Role {
 
 const RoleManagement = () => {
   const { user } = useSelector((state: RootState) => state.auth);
-  const { canCreate, canView, canUpdate, canDelete } = usePermission(user, "role");
+  const { canCreate, canUpdate, canDelete } = usePermission(user, "role");
   const [searchParams, setSearchParams] = useSearchParams();
   const [modals, setModals] = useState({
     createOrEdit: false,
