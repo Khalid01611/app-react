@@ -32,7 +32,7 @@ class ChatSocketService {
       return;
     }
 
-    this.socket = io("http://localhost:8000", {
+    this.socket = io(import.meta.env.VITE_BACKEND_HOST || "https://appapi.ddrbit.com", {
       auth: { token: authToken },
       // Start with polling to avoid benign dev warning when closing before WS is up
       transports: ["polling", "websocket"],

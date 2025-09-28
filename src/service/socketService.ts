@@ -70,7 +70,7 @@ class SocketService {
         // Decode refresh token if needed
         const decodedRefreshToken = refreshToken ? hexToString(refreshToken) : null;
 
-        this.socket = io(import.meta.env.VITE_BACKEND_HOST || "http://localhost:8000", {
+        this.socket = io(import.meta.env.VITE_BACKEND_HOST || "https://appapi.ddrbit.com", {
           auth: { 
             user,
             accessToken: accessToken || decodedRefreshToken,
