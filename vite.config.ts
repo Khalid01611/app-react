@@ -24,8 +24,7 @@ export default defineConfig({
         manualChunks: {
           vendor: ['react', 'react-dom'],
           socket: ['socket.io-client'],
-          ui: ['@headlessui/react', '@heroicons/react'],
-          utils: ['axios', 'date-fns'],
+          utils: ['axios'],
         },
       },
     },
