@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Toaster } from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
-import { BrowserRouter, Route, Routes, useLocation, Navigate } from "react-router";
+import { HashRouter, Route, Routes, useLocation, Navigate } from "react-router";
 import { authUser, setUser } from "./app/features/auth/authSlice";
 import type { AppDispatch, RootState } from "./app/Store";
 import AuthMiddleware from "./middlewares/AuthMiddleware";
@@ -41,13 +41,13 @@ const App = () => {
   return (
     <SiteSettingsProvider>
       <Toaster position="bottom-right" reverseOrder={false} />
-      <BrowserRouter>
+      <HashRouter>
         <>
           <AppRoutes />
           <GlobalCallManager />
           <GlobalMessageNotifier />
         </>
-      </BrowserRouter>
+      </HashRouter>
     </SiteSettingsProvider>
   );
 };
