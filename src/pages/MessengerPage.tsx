@@ -31,6 +31,7 @@ import ChatInterface from "../components/Chat/ChatInterface";
 import ConversationList from "../components/Chat/ConversationList";
 import NewConversationModal from "../components/Chat/NewConversationModal";
 import type { IUser, IConversation } from "../service/chatService";
+import { ChatService } from "../service/chatService";
 import chatSocketService from "../socket/chatSocket";
 import DeleteDialog from "../components/ui/DeleteDialog";
 import AdminLayout from "../layouts/Admin/AdminLayout";
@@ -325,7 +326,7 @@ const MessengerPage: React.FC = () => {
     if (!deleteTargetId) return;
     setIsDeleting(true);
     try {
-      await (await import("../service/chatService")).ChatService.deleteConversation(deleteTargetId);
+      await ChatService.deleteConversation(deleteTargetId);
       await dispatch(fetchConversations());
       if (currentConversation?._id === deleteTargetId) {
         dispatch(setCurrentConversation(null));

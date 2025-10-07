@@ -7,6 +7,7 @@ import Spinner from "../Spinner";
 import MessageBubble from "./MessageBubble";
 import MessageInput from "./MessageInput";
 import ForwardMessageModal from "./ForwardMessageModal";
+import chatSocketService from "../../socket/chatSocket";
 
 interface ChatInterfaceProps {
   conversation: IConversation;
@@ -423,9 +424,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         currentUserId={currentUserId}
         onForward={async (targetConversationId, msg) => {
           try {
-            // Import the socket service dynamically to avoid circular dependencies
-            const chatSocketService = (await import("../../socket/chatSocket")).default;
-            
             // Check socket connection
             const isConnected = chatSocketService.getConnectionStatus();
             

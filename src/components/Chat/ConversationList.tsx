@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { MoreVertical, VolumeX, Volume2, Trash2 } from "lucide-react";
 import type { IConversation } from "../../service/chatService";
+import { ChatService } from "../../service/chatService";
 
 interface ConversationListProps {
   conversations: IConversation[];
@@ -28,7 +29,6 @@ const MoreOptionsMenu: React.FC<MoreOptionsMenuProps> = ({ conversation, isMuted
   const handleMute = async (e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-      const { ChatService } = await import("../../service/chatService");
       await ChatService.muteConversation(conversation._id, !isMuted);
       onToggle(conversation._id);
     } catch (error) {
